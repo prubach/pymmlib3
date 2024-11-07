@@ -198,9 +198,9 @@ class PDBRecord(dict):
         for rec in rec_list:
 
             ## XXX: add primary key generation for bad records
-            if primary_key in rec.keys():
+            try:
                 pkey = rec[primary_key]
-            else:
+            except KeyError:
                 ## if the record has no primary key, retrieve it from the
                 ## last dictionary which is in the same order as the
                 ## record list

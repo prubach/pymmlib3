@@ -229,10 +229,12 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
 
         ## always derive element from atom name for PDB files -- they are
         ## too messed up to use the element column
-        atm_map["name"] = ""
-        atm_map["element"] = ""
-        if "name" in rec.keys():
+        try:
             name = rec["name"]
+        except KeyError:
+            atm_map["name"] = ""
+            atm_map["element"] = ""
+        else:
             atm_map["name"] = name.strip()
             
             res_name = rec.get("resName", "")
@@ -478,9 +480,10 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
 
     def process_HELIX(self, rec):
         ## the helixID field is mandatory
-        if "helixID" not in rec.keys():
+        try:
+            helix_id = rec["helixID"]
+        except KeyError:
             return
-        helix_id = rec["helixID"]
 
         ## get the dictionary describing this helix or create it if it does 
         ## not exist
@@ -514,9 +517,10 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
 
     def process_SHEET(self, rec):
         ## the sheetID field is mandatory
-        if "sheetID" not in rec.keys():
+        try:
+            sheet_id = rec["sheetID"]
+        except KeyError:
             return
-        sheet_id = rec["sheetID"]
 
         ## get the dictionary describing this sheet or create it if it does 
         ## not exist
@@ -570,16 +574,17 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
         setmaps(rec, "prevAtom", strand, "reg_prev_atom")
 
         ## append to the strand list
-        if "strand_list" in sheet.keys():
+        try:
             sheet["strand_list"].append(strand)
-        else:
+        except KeyError:
             sheet["strand_list"] = [strand]
             
     def process_SITE(self, rec):
         ## the siteID field is mandatory
-        if "siteID" not in rec.keys():
+        try:
+            site_id = rec["siteID"]
+        except KeyError:
             return
-        site_id = rec["siteID"]
 
         ## get the dictionary describing this site or create it if it does
         ## not exist
@@ -603,7 +608,10 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             icode_key = "icode%d" % (i)
 
             ## check for mandatory fields
-            if chain_key not in rec.keys() or seq_key not in rec.keys():
+            try:
+                rec[chain_key]
+                rec[seq_key]
+            except KeyError:
                 break
 
             ## get resiude information and create dictionary
@@ -616,9 +624,9 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
 
             ## add the fragment description to the site description
             ## fragment list
-            if "fragment_list" in site.keys():
+            try:
                 site["fragment_list"].append(residue)
-            else:
+            except KeyError:
                 site["fragment_list"] = [residue]
 
     def bond_processor(self, **args):
@@ -656,9 +664,9 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             return atm
 
         ## get atm1
-        if "atm1" in args.keys():
+        try:
             atm1 = args["atm1"]
-        else:
+        except KeyError:
             chain_id1 = args.get("chain_id1") or rec.get(args["chain_id1_field"])
             frag_id1 = args.get("frag_id1") or self.get_fragment_id(rec, args["res_seq1_field"],args["icode1_field"])
             name1 = args.get("name1") or rec.get("name1_field")
@@ -666,9 +674,9 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             atm1 = get_atom(chain_id1, frag_id1, name1, alt_loc1)
 
         ## get atm2
-        if "atm2" in args.keys():
+        try:
             atm2 = args["atm2"]
-        else:
+        except KeyError:
             chain_id2 = args.get("chain_id2") or rec.get(args["chain_id2_field"])
             frag_id2 = args.get("frag_id2") or  self.get_fragment_id(rec, args["res_seq2_field"],args["icode2_field"])
             name2 = args.get("name2") or  rec.get("name2_field")
@@ -687,9 +695,9 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
         else:
             bkey = (atm2, atm1)
 
-        if bkey in self.bond_map.keys():
+        try:
             bond = self.bond_map[bkey]
-        else:
+        except KeyError:
             bond = self.bond_map[bkey] = {}
 
         ## set bond type
@@ -809,28 +817,30 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             self.pdb_error("SLTBRG", "Atom not found")
         
     def process_CONECT(self, rec):
-        if "serial" not in rec.keys():
+        try:
+            serial = rec["serial"]
+        except KeyError:
             self.pdb_error("CONECT", "missing serial field")
             return
-        serial = rec["serial"]
 
-        if serial not in self.atom_serial_map.keys():
+        try:
+            atm1 = self.atom_serial_map[serial]
+        except KeyError:
             self.pdb_error("CONECT", "incorrect serial number")
             return
 
-        atm1 = self.atom_serial_map[serial]
-
         def helper_func(field_list, bond_type):
             for field in field_list:
-                if field not in rec.keys():
+                try:
+                    serial2 = rec[field]
+                except KeyError:
                     continue
-                serial2 = rec[field]
 
-                if serial2 not in self.atom_serial_map.keys():
+                try:
+                    atm2 = self.atom_serial_map[serial2]
+                except KeyError:
                     self.pdb_error("CONECT", "incorrect serial number")
                     continue
-
-                atm2 = self.atom_serial_map[serial2]
 
                 self.bond_processor(
                     rec = rec,
@@ -884,9 +894,10 @@ class PDBFileBuilder(object):
         """
         assert isinstance(atm, Structure.Atom)
 
-        if atm in self.atom_serial_map.keys():
+        try:
             return self.atom_serial_map[atm]
-
+        except KeyError:
+            pass
         atom_serial_num = self.next_serial_number()
         self.atom_serial_map[atm] = atom_serial_num
         return atom_serial_num
