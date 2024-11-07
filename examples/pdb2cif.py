@@ -13,29 +13,29 @@ import string
 from mmLib import FileIO
 
 def usage():
-    print "NAME"
-    print "  pdb2cif.py - convert a PDB file to a mmCIF file"
-    print
-    print "SYNOPSIS"
-    print "  pdb2cif.py [-h|--help]" 
-    print "  pdb2cif.py [input] [output]"
-    print
-    print "DESCRIPTION"
-    print "  input     path of input file, or '-' for stdin"
-    print "  output    path of output file, or '-' for stdout"
-    print "  -h, --help  display this help and exit" 
-    print
-    print "EXAMPLE"
-    print "  Translate mmCIF file lysozyme.cif to lysozyme.pdb:"
-    print "    # python pdb2cif.py lysozyme.pdb lysozyme.cif"
-    print
-    print "  Translate a mmCIF file from standard input to a PDB file"
-    print "  written to standard output (2 equivelent forms)"
-    print "    # cat lysozyme.cif | ./cif2pdb.py > lysozyme.pdb"
-    print "    # cat lysozyme.cif | ./cif2pdb.py - - > lysozyme.pdb"
-    print
-    print "AUTHORS"
-    print "  Jay Painter <jpaint@u.washington.edu>"
+    print("NAME")
+    print("  pdb2cif.py - convert a PDB file to a mmCIF file")
+    print()
+    print("SYNOPSIS")
+    print("  pdb2cif.py [-h|--help]") 
+    print("  pdb2cif.py [input] [output]")
+    print()
+    print("DESCRIPTION")
+    print("  input     path of input file, or '-' for stdin")
+    print("  output    path of output file, or '-' for stdout")
+    print("  -h, --help  display this help and exit") 
+    print()
+    print("EXAMPLE")
+    print("  Translate mmCIF file lysozyme.cif to lysozyme.pdb:")
+    print("    # python pdb2cif.py lysozyme.pdb lysozyme.cif")
+    print()
+    print("  Translate a mmCIF file from standard input to a PDB file")
+    print("  written to standard output (2 equivelent forms)")
+    print("    # cat lysozyme.cif | ./cif2pdb.py > lysozyme.pdb")
+    print("    # cat lysozyme.cif | ./cif2pdb.py - - > lysozyme.pdb")
+    print()
+    print("AUTHORS")
+    print("  Jay Painter <jpaint@u.washington.edu>")
 
 
 if __name__ == '__main__':

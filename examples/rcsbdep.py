@@ -384,8 +384,8 @@ def rcsb_report_missing(cif_data):
 
         ## table does not exist
         if cif_table == None:
-            print "[ERROR] missing RCSB required table: %s" % (
-                table_name)
+            print("[ERROR] missing RCSB required table: %s" % (
+                table_name))
 
         ## check table for missing columns
         else:
@@ -393,9 +393,9 @@ def rcsb_report_missing(cif_data):
                 col = col_desc["name"]
 
                 for row in cif_table:
-                    if not row.has_key(col):
-                        print "[ERROR] missing RCSB required column %s.%s" % (
-                            table_name, col)
+                    if col not in row:
+                        print("[ERROR] missing RCSB required column %s.%s" % (
+                            table_name, col))
 
 
 ##
@@ -410,7 +410,7 @@ usage: rcsbdep.py [-f cif path] [-f cif path] ... <mmCIF OUTPUT FILE>
 """
 
 def usage():
-    print USAGE
+    print(USAGE)
     raise SystemExit
 
 def vet_merge_cif_table_entry_id(cif_table, entry_id):
@@ -422,7 +422,7 @@ def vet_merge_cif_table_entry_id(cif_table, entry_id):
     for col in cif_table.columns:
         if col == "entry_id":
             for cif_row in cif_table:
-                if cif_row.has_key("entry_id"):
+                if "entry_id" in cif_row:
                     cif_row["entry_id"] = entry_id
 
 def add_entry_id(cif_table, entry_id):
@@ -440,7 +440,7 @@ def merge_cif_table_multi(dest_table, src_table):
     for row in src_table:
         dest_table.append(copy.deepcopy(row))
 
-        for col in row.keys():
+        for col in list(row.keys()):
             if not dest_table.has_column(col):
                 dest_table.append_column(col)
 
@@ -465,12 +465,12 @@ def merge_cif_table_single(dest_table, src_table):
     else:
         dest_row = dest_table[0]
 
-    for key, val in src_row.items():
+    for key, val in list(src_row.items()):
 
         ## If the source and destination rows both have values for the same 
         ## field, check for NULL values in the source row so the dest row 
         ## does not have a good value overwriten by a NULL value.
-        if dest_row.has_key(key):
+        if key in dest_row:
 
             ## if the destination value is null, merge the value without 
             ## complaint
@@ -488,8 +488,8 @@ def merge_cif_table_single(dest_table, src_table):
                 ## if source and destination values are non-null, then warn 
                 ## the user but merge anyway
                 else:
-                    print "[WARNING] merge overwrite: %s.%s = %s -> %s" % (
-                        dest_table.name, key, str(dest_row[key]), str(val))
+                    print("[WARNING] merge overwrite: %s.%s = %s -> %s" % (
+                        dest_table.name, key, str(dest_row[key]), str(val)))
                     dest_row[key] = val
 
     for col in src_table.columns:
@@ -591,11 +591,11 @@ def main():
             entry_id = item
 
     if len(args) != 1:
-        print "[ERROR] Output mmCIF path required."
+        print("[ERROR] Output mmCIF path required.")
         usage()
 
     if len(merge_paths) == 0:
-        print "[ERROR] Input mmCIF paths required."
+        print("[ERROR] Input mmCIF paths required.")
         usage()
 
     output_path = args[0]

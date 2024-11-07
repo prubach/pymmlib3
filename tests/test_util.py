@@ -6,7 +6,7 @@
 """
 
 ## Python
-from __future__ import generators
+
 import os
 import sys
 import re
@@ -14,15 +14,15 @@ import re
 ## pymmlib
 from mmLib import FileIO
 
-pdb_regex = ("[\w+\.]+pdb",
-             "[\w\.]+pdb\.gz",
-	     "pdb[\w]+",
-             "pdb[\w\.]+Z",
-             "pdb[\w\.]+gz")
+pdb_regex = (r"[\w+\.]+pdb",
+             r"[\w\.]+pdb\.gz",
+	     r"pdb[\w]+",
+             r"pdb[\w\.]+Z",
+             r"pdb[\w\.]+gz")
 
-cif_regex = ("[\w\.]+cif",
-             "[\w\.]+cif\.Z",
-             "[\w\.]+cif\.gz")
+cif_regex = (r"[\w\.]+cif",
+             r"[\w\.]+cif\.Z",
+             r"[\w\.]+cif\.gz")
 
 all_regex = pdb_regex + cif_regex
 
@@ -72,8 +72,8 @@ def walk_pdb_cif(path, start_path = None):
     return walk(path, start_path=start_path, regex_args=all_regex)
 
 def pdb_stats(path):
-    re_model = re.compile("^MODEL\s+(\d+).*")
-    re_atom = re.compile("^(?:ATOM|HETATM)\s*(\d+).*")
+    re_model = re.compile(r"^MODEL\s+(\d+).*")
+    re_atom = re.compile(r"^(?:ATOM|HETATM)\s*(\d+).*")
 
     model = 1
     serial_map = {}
@@ -95,17 +95,17 @@ def pdb_stats(path):
             ser = m.group(1)
             ser = "%s-%s" % (ser, model)
 
-            if serial_map.has_key(ser):
-                print "pdb_stats() ERROR: PDB DUPLICATE ID"
-                print "pdb_stats() [1]",serial_map[ser]
-                print "pdb_stats() [2]",ln
+            if ser in serial_map:
+                print("pdb_stats() ERROR: PDB DUPLICATE ID")
+                print("pdb_stats() [1]",serial_map[ser])
+                print("pdb_stats() [2]",ln)
             else:
                 serial_map[ser] = ln
 
     return stats
 
 def cif_stats(path):
-    re_atom = re.compile("^(?:ATOM|HETATM)\s+(\d+)\s+.*")
+    re_atom = re.compile(r"^(?:ATOM|HETATM)\s+(\d+)\s+.*")
 
     atom_site_ids = {}    
     start_counting_atoms = False
@@ -125,15 +125,15 @@ def cif_stats(path):
             stats["atoms"] += 1
             aid = m.group(1)
 
-            if atom_site_ids.has_key(aid):
-                print "cif_stats() ERROR: CIF DUPLICATE ID"
-                print "cif_stats() [1]",atom_site_ids[aid]
-                print "cif_stats() [2]",ln
+            if aid in atom_site_ids:
+                print("cif_stats() ERROR: CIF DUPLICATE ID")
+                print("cif_stats() [1]",atom_site_ids[aid])
+                print("cif_stats() [2]",ln)
             else:
                 atom_site_ids[aid] = ln
 
     if stats["atoms"] > 0:
-	return stats
+        return stats
 
     # Assume that we are looking at plain CIF file
 
@@ -145,21 +145,20 @@ def cif_stats(path):
 
         if not start_counting_atoms or ln[0] == "_":
             continue
-	fields = ln.split()
-	if not fields:
-	    break
-
+        fields = ln.split()
+        if not fields:
+            break
         ## count atoms
-	stats["atoms"] += 1
-	aid = fields[0]
+        stats["atoms"] += 1
+        aid = fields[0]
 
-	if atom_site_ids.has_key(aid):
-	    print "CIF DUPLICATE ID"
-	    print "[1]",atom_site_ids[aid]
-	    print "[2]",ln
-	    sys.exit(1)
-	else:
-	    atom_site_ids[aid] = ln
+        if aid in atom_site_ids:
+            print("CIF DUPLICATE ID")
+            print("[1]",atom_site_ids[aid])
+            print("[2]",ln)
+            sys.exit(1)
+        else:
+            atom_site_ids[aid] = ln
 
     return stats
 
@@ -170,7 +169,7 @@ if __name__ == "__main__":
 
         if pathx.endswith(".Z") or pathx.endswith(".gz"):
             x = "gunzip %s" % (pathx)
-            print "CMD: ",x
+            print("CMD: ",x)
             os.system(x)
 
             if pathx.endswith(".Z"):
@@ -184,5 +183,5 @@ if __name__ == "__main__":
 
         if not os.path.isfile(dest):
             x = "cp %s %s" % (pathx, dest)
-            print "CMD: ",x
+            print("CMD: ",x)
             os.system(x)

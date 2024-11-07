@@ -12,10 +12,10 @@ import copy
 import weakref
 import gc
 
-try:
-    import numpy
-except ImportError:
-    import mmLib.NumericCompat as numpy
+#try:
+import numpy
+#except ImportError:
+#    import mmLib.NumericCompat as numpy
 
 import test_util
 from mmLib.FileIO import get_file_extension
@@ -24,16 +24,17 @@ from mmLib import Structure, FileIO
 
 class Stats(dict):
     def __init__(self):
+        super().__init__()
         self["chain_count"]    = 0
         self["fragment_count"] = 0
         self["atom_count"]     = 0
         self["bond_count"]     = 0
 
     def print_stats(self):
-        print "Number of Chains-----:",self["chain_count"]
-        print "Number of Fragments--:",self["fragment_count"]
-        print "Number of Atoms------:",self["atom_count"]
-        print "Number of Bonds------:",self["bond_count"]
+        print("Number of Chains-----:",self["chain_count"])
+        print("Number of Fragments--:",self["fragment_count"])
+        print("Number of Atoms------:",self["atom_count"])
+        print("Number of Bonds------:",self["bond_count"])
 
 
 def bond_test(bond, atom, stats):
@@ -375,7 +376,7 @@ def struct_test(struct, stats):
 
     ## get a lit of all alt_loc ids
     alt_loc_list = struct.alt_loc_list()
-    print "alt_loc_list: ",alt_loc_list
+    print("alt_loc_list: ",alt_loc_list)
 
     ## iterate over all atoms
     for atm in struct.iter_all_atoms():
@@ -498,22 +499,22 @@ def run_structure_tests(struct, stats):
     bond_dict = {}
     for atm in struct.iter_all_atoms():
         for bond in atm.iter_bonds():
-            if not bond_dict.has_key(bond):
+            if bond not in bond_dict:
                 bond_dict[bond] = True
                 bond_test(bond, atm, stats)
 
     ## crazy test: remove all atoms, then add them back
-    print "ATOM REMOVEAL TEST"
-    print "STRUCT NUM ATOMS %d" % (struct.count_all_atoms())
+    print("ATOM REMOVEAL TEST")
+    print("STRUCT NUM ATOMS %d" % (struct.count_all_atoms()))
     alist = []
     for atm in struct.iter_all_atoms():
         alist.append(atm)
     for atm in alist:
         struct.remove_atom(atm)
-    print "AFTER REMOVAL NUM ATOMS %d" % (struct.count_all_atoms())
+    print("AFTER REMOVAL NUM ATOMS %d" % (struct.count_all_atoms()))
     for atm in alist:
         struct.add_atom(atm)
-    print "STRUCT NUM ATOMS(AFTERADD) %d" % (struct.count_all_atoms())
+    print("STRUCT NUM ATOMS(AFTERADD) %d" % (struct.count_all_atoms()))
 
 
 def cmp_struct(struct1, struct2):
@@ -529,7 +530,7 @@ def cmp_struct(struct1, struct2):
         try:
             assert atm1.element == atm2.element
         except AssertionError:
-            print "%s != %s" % (atm1.element, atm2.element)
+            print("%s != %s" % (atm1.element, atm2.element))
             raise
 
         assert atm1.name        == atm2.name
@@ -539,7 +540,7 @@ def cmp_struct(struct1, struct2):
         assert atm1.model_id    == atm2.model_id
         assert atm1.alt_loc     == atm2.alt_loc
 
-        assert (atm1.position == None and atm2.position == None) or \
+        assert (atm1.position.all() == None and atm2.position.all() == None) or \
                numpy.allclose(atm1.position, atm2.position)
 
         assert (atm1.sig_position == None and atm2.sig_position == None) or \
@@ -562,7 +563,7 @@ def cmp_struct(struct1, struct2):
 
         U1 = atm1.get_U()
         U2 = atm2.get_U()
-        assert (U1 == None and U2 == None) or numpy.allclose(U1, U2)
+        assert (U1.all() == None and U2.all() == None) or numpy.allclose(U1, U2)
 
     for atm1 in struct1.iter_all_atoms():
         model2 = struct2.get_model(atm1.model_id)
@@ -573,14 +574,14 @@ def cmp_struct(struct1, struct2):
         try:
             cmp_atoms(atm1, atm2)
         except (AssertionError, TypeError):
-            print
-            print "ERROR: cmp_atom(%s, %s)" % (atm1, atm2)
-            print
-            print "atm1.position = %s" % (atm1.position)
-            print "atm2.position = %s" % (atm2.position)
-            print
-            print "atm1.temp_factor = %s" % (atm1.temp_factor)
-            print "atm2.temp_factor = %s" % (atm2.temp_factor)
+            print()
+            print("ERROR: cmp_atom(%s, %s)" % (atm1, atm2))
+            print()
+            print("atm1.position = %s" % (atm1.position))
+            print("atm2.position = %s" % (atm2.position))
+            print()
+            print("atm1.temp_factor = %s" % (atm1.temp_factor))
+            print("atm2.temp_factor = %s" % (atm2.temp_factor))
             raise
 
         for bond in atm1.iter_bonds():
@@ -591,7 +592,7 @@ def file_verify(path, struct, stats):
     """Use some independent parsers to verify some simple stats between the
     structure and the file description.
     """
-    print "[file verify %s]" % path
+    print("[file verify %s]" % path)
 
     if get_file_extension(path) == "PDB":
         fil_stats = test_util.pdb_stats(path)
@@ -599,8 +600,8 @@ def file_verify(path, struct, stats):
     elif get_file_extension(path) == "CIF":
         fil_stats = test_util.cif_stats(path)
 
-    print "File Atom Count------:",fil_stats["atoms"]
-    print "Struct Atom Count----:",stats["atom_count"]
+    print("File Atom Count------:",fil_stats["atoms"])
+    print("Struct Atom Count----:",stats["atom_count"])
 
     assert fil_stats["atoms"] == stats["atom_count"]
 
@@ -610,7 +611,7 @@ def save_verify(struct, stats):
     compare structures.
     """
     ## pdb
-    print "[temp.pdb]"
+    print("[temp.pdb]")
     FileIO.SaveStructure(fil = "temp.pdb", struct = struct, format = "PDB")
     pdb_struct = FileIO.LoadStructure(
         fil           = "temp.pdb",
@@ -618,7 +619,7 @@ def save_verify(struct, stats):
     cmp_struct(struct, pdb_struct)
 
     ## mmCIF
-    print "[temp.cif]"
+    print("[temp.cif]")
     FileIO.SaveStructure(fil = "temp.cif", struct = struct, format = "CIF")
 
     cif_struct = FileIO.LoadStructure(
@@ -630,20 +631,20 @@ def save_verify(struct, stats):
 WEAKREF_LIST = []
 WEAKREF_PATH = {}
 def weakref_callback(ref):
-    print "STRUCTURE DESTROYED: ",WEAKREF_PATH[ref]
+    print("STRUCTURE DESTROYED: ",WEAKREF_PATH[ref])
     del WEAKREF_PATH[ref]
     WEAKREF_LIST.remove(ref)
 
 
 def main(walk_path, start_path):
-    print "Running Python Macromolecular Library Test Program"
-    print "--------------------------------------------------"
-    print "This program will throw a AssertionError (or worse!) if it"
-    print "runs into any problems."
-    print
+    print("Running Python Macromolecular Library Test Program")
+    print("--------------------------------------------------")
+    print("This program will throw a AssertionError (or worse!) if it")
+    print("runs into any problems.")
+    print()
 
     for path in test_util.walk_pdb_cif(walk_path, start_path):
-        print "[%s]" % (path)
+        print("[%s]" % (path))
         time1 = time.time()
 
         stats  = Stats()
@@ -658,21 +659,21 @@ def main(walk_path, start_path):
 
         ## test the mmLib.Structure object API and
         ## with massive sanity checking
-        print "[loaded struct]"
+        print("[loaded struct]")
         try:
             run_structure_tests(struct, stats)
         except AssertionError:
-            print "*** AssertionError while testing: %s ***" % (
-                str(stats["testing"]))
+            print("*** AssertionError while testing: %s ***" % (
+                str(stats["testing"])))
             raise
         except:
-            print "*** Error while testing: %s ***" % (
-                str(stats["testing"]))
+            print("*** Error while testing: %s ***" % (
+                str(stats["testing"])))
             raise
         stats.print_stats()
 
         ## copy the structure and re-run those tests
-        print "[copy struct]"
+        print("[copy struct]")
         struct_cp = copy.deepcopy(struct)
         cmp_struct(struct, struct_cp)
 
@@ -684,13 +685,13 @@ def main(walk_path, start_path):
         from mmLib.CIF import DataBlock
         if (hasattr(struct, "cif_data")
                 and isinstance(struct.cif_data, DataBlock)):
-            print "[save verify skipped]"
+            print("[save verify skipped]")
         else:
-            print "[save verify]"
+            print("[save verify]")
             save_verify(struct, stats)
 
         time2 = time.time()
-        print "Tests Time (sec)-----:",int(time2-time1)
+        print("Tests Time (sec)-----:",int(time2-time1))
 
         ## dereference!
         struct    = None
@@ -700,11 +701,11 @@ def main(walk_path, start_path):
 
         ## force garbage collection
         gc.collect()
-        print
+        print()
 
 
 def usage():
-    print "usage: mmlib_test.py <PDB/mmCIF file or directory of files>"
+    print("usage: mmlib_test.py <PDB/mmCIF file or directory of files>")
     sys.exit(1)
 
 if __name__ == "__main__":

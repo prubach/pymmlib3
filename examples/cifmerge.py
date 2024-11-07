@@ -4,7 +4,7 @@
 ## its license.  Please see the LICENSE file that should have been
 ## included as part of this package.
 
-from __future__ import generators
+
 import sys
 import getopt
 import copy
@@ -189,7 +189,7 @@ class mmCIFMerge(object):
         """
         for cif_table in cif_data:
             for cif_row in cif_table:
-                for (column, value) in cif_row.items():
+                for (column, value) in list(cif_row.items()):
                     if value == "." or value == "?" or value == "":
                         del cif_row[column]
 
@@ -451,8 +451,8 @@ class mmCIFMerge(object):
                 ## column values, then the row will cleanly merge in
                 ## and nothing needs to be done
                 will_merge = True
-                for (col, val) in cif_row.items():
-                    if crx.has_key(col) == False:
+                for (col, val) in list(cif_row.items()):
+                    if (col in crx) == False:
                         continue
                     if crx[col] != val:
                         will_merge = False
@@ -660,45 +660,45 @@ class UsageException(Exception):
 
 
 def usage():
-    print 'cifmerge.py - A utility for intelligent merging and manipulation of'
-    print '              mmCIF files by utilizing linked data definitions'
-    print '              found in  mmCIF dictionaries.'
-    print
-    print 'usage: cifmerge.py [-s "table.column=old:new"]'
-    print '                   [-u "table.column=old:new"]'
-    print '                   [-d mmCIF dictionary_filename]'
-    print '                   [-f merge_filename]'
-    print '                   [-n data_name]'
-    print '                   OUTPUT_CIF_FILENAME'
-    print
-    print '    -h,-?'
-    print '        Prints this help page.'
-    print
-    print '    -s table.column=old:new'
-    print '        Changes the value of a row in table.column from old to'
-    print '        new, and then changes all linked child values of that'
-    print '        table.column according to the loaded mmCIF dictionaries.'
-    print
-    print '    -u table.column=old:new'
-    print '        Uber-alles value change. This reduces table to a one row'
-    print '        table with only the value new. If an old value is given,'
-    print '        any other columns of data in the row will be preserved.'
-    print '        All linked data items found in the mmCIF dictionaries'
-    print '        in the entire file are then changed to value new.'
-    print
-    print '    -d dictionary_filename'
-    print '        Specifies a mmCIF dictionary to use. Dictionaries are'
-    print '        necessary for the correct merging of tables with linked'
-    print '        values.'
-    print
-    print '    -f merge_filename'
-    print '        A mmCIF file to merge. Use multiple times to merge'
-    print '        multiple files.'
-    print 
-    print '    -n name'
-    print '        Give the output mmCIF file data the argument name. If'
-    print '        no name is specified, XXXX is used.'
-    print
+    print('cifmerge.py - A utility for intelligent merging and manipulation of')
+    print('              mmCIF files by utilizing linked data definitions')
+    print('              found in  mmCIF dictionaries.')
+    print()
+    print('usage: cifmerge.py [-s "table.column=old:new"]')
+    print('                   [-u "table.column=old:new"]')
+    print('                   [-d mmCIF dictionary_filename]')
+    print('                   [-f merge_filename]')
+    print('                   [-n data_name]')
+    print('                   OUTPUT_CIF_FILENAME')
+    print()
+    print('    -h,-?')
+    print('        Prints this help page.')
+    print()
+    print('    -s table.column=old:new')
+    print('        Changes the value of a row in table.column from old to')
+    print('        new, and then changes all linked child values of that')
+    print('        table.column according to the loaded mmCIF dictionaries.')
+    print()
+    print('    -u table.column=old:new')
+    print('        Uber-alles value change. This reduces table to a one row')
+    print('        table with only the value new. If an old value is given,')
+    print('        any other columns of data in the row will be preserved.')
+    print('        All linked data items found in the mmCIF dictionaries')
+    print('        in the entire file are then changed to value new.')
+    print()
+    print('    -d dictionary_filename')
+    print('        Specifies a mmCIF dictionary to use. Dictionaries are')
+    print('        necessary for the correct merging of tables with linked')
+    print('        values.')
+    print()
+    print('    -f merge_filename')
+    print('        A mmCIF file to merge. Use multiple times to merge')
+    print('        multiple files.')
+    print() 
+    print('    -n name')
+    print('        Give the output mmCIF file data the argument name. If')
+    print('        no name is specified, XXXX is used.')
+    print()
 
     raise SystemExit
 
@@ -817,8 +817,8 @@ if __name__ == "__main__":
 
     try:
         main()
-    except UsageException, uerr:
-        print "[USAGE ERROR]: %s" % (uerr.text)
-        print
+    except UsageException as uerr:
+        print("[USAGE ERROR]: %s" % (uerr.text))
+        print()
 
         usage()

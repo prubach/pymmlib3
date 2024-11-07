@@ -31,16 +31,16 @@ def main(path):
 
     if num_atoms > 0:
         mean_B = mean_B / num_atoms
-        print "mean B: ",mean_B
-        print "max  B: ",max_B
-        print "min  B: ",min_B
+        print("mean B: ",mean_B)
+        print("max  B: ",max_B)
+        print("min  B: ",min_B)
 
     else:
-        print "No Atoms Found"
+        print("No Atoms Found")
 
 try:
     path = sys.argv[1]
 except IndexError:
-    print "usage: calc_Bmean.py <PDB/mmCIF file>"
+    print("usage: calc_Bmean.py <PDB/mmCIF file>")
 else:
     main(path)

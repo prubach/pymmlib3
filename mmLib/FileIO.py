@@ -8,11 +8,11 @@ The mmCIF and PDB file formats are currently supported.
 import os
 import types
 
-from mmCIF        import mmCIFFile
-from mmCIFBuilder import mmCIFStructureBuilder, mmCIFFileBuilder
-from PDB          import PDBFile
-from PDBBuilder   import PDBStructureBuilder, PDBFileBuilder
-from CIFBuilder   import CIFStructureBuilder
+from .mmCIF        import mmCIFFile
+from .mmCIFBuilder import mmCIFStructureBuilder, mmCIFFileBuilder
+from .PDB          import PDBFile
+from .PDBBuilder   import PDBStructureBuilder, PDBFileBuilder
+from .CIFBuilder   import CIFStructureBuilder
 
 
 class FileIOUnsupportedFormat(Exception):
@@ -79,13 +79,13 @@ def get_file_extension(path, default_extension = "PDB"):
     return default_extension
 
 def get_file_arg(args):
-    try:
+    if "fil" in args.keys():
         fil = args["fil"]
-    except KeyError:
-        try:
+    else:
+        if "file" in args.keys():
             fil = args["file"]
-        except KeyError:
-            raise TypeError,"LoadStructure(file=) argument required"
+        else:
+            raise TypeError("LoadStructure(file=) argument required")
 
     return fil
 
@@ -112,7 +112,7 @@ def LoadStructure(**args):
     """
     fil = get_file_arg(args)
 
-    if not args.has_key("format"):
+    if "format" not in args:
         args["format"] = get_file_extension(fil)
     else:
         args["format"] = args["format"].upper()
@@ -122,7 +122,7 @@ def LoadStructure(**args):
     if args["format"] == "PDB":
         return PDBStructureBuilder(**args).struct
     elif args["format"] == "CIF":
-        from mmCIF import mmCIFSyntaxError
+        from .mmCIF import mmCIFSyntaxError
         try:
             return mmCIFStructureBuilder(**args).struct
         except mmCIFSyntaxError:
@@ -140,20 +140,20 @@ def SaveStructure(**args):
     """
     fil = get_file_arg(args)
 
-    if not args.has_key("format"):
+    if "format" not in args:
         args["format"] = get_file_extension(fil)
     else:
         args["format"] = args["format"].upper()
 
     fileobj = open_fileobj(fil, "w")
 
-    try:
+    if "struct" in args.keys():
         struct = args["struct"]
-    except KeyError:
-        try:
+    else:
+        if "structure" in args.keys():
             struct = args["structure"]
-        except KeyError:
-            raise TypeError,"LoadStructure(structure=) argument required"
+        else:
+            raise TypeError("LoadStructure(structure=) argument required")
 
     if args["format"] == "PDB":
         pdb_file = PDBFile()

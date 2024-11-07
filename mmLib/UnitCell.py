@@ -6,18 +6,10 @@
 """
 import math
 
-try:
-    import numpy
-    try:
-        from numpy.oldnumeric import linear_algebra as linalg
-    except ImportError:
-        from numpy.linalg import old as linalg
-except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+import numpy
 
-import AtomMath
-import SpaceGroups
+from . import AtomMath
+from . import SpaceGroups
 
 
 class UnitCell(object):
@@ -56,7 +48,7 @@ class UnitCell(object):
         self.frac_to_orth = self.calc_orthogonalization_matrix()
 
         ## check our math!
-        assert numpy.allclose(self.orth_to_frac, linalg.inverse(self.frac_to_orth))
+        assert numpy.allclose(self.orth_to_frac, numpy.linalg.inv(self.frac_to_orth))
 
     def __str__(self):
         alpha = math.degrees(self.alpha)
@@ -294,9 +286,9 @@ def strRT(R, T):
 
 ## <testing>
 def test_module():
-    print "================================================="
-    print "TEST CASE #1: Triclinic unit cell"
-    print
+    print("=================================================")
+    print("TEST CASE #1: Triclinic unit cell")
+    print()
 
     uc = UnitCell(7.877, 7.210, 7.891, 105.563, 116.245, 79.836)
 
@@ -305,17 +297,17 @@ def test_module():
                      [0.0, 0.0, 1.0]], float)
 
 
-    print uc
-    print "volume                   = ", uc.calc_v()
-    print "cell volume              = ", uc.calc_volume()
-    print "fractionalization matrix =\n", uc.calc_fractionalization_matrix()
-    print "orthogonalization matrix =\n", uc.calc_orthogonalization_matrix()
+    print(uc)
+    print("volume                   = ", uc.calc_v())
+    print("cell volume              = ", uc.calc_volume())
+    print("fractionalization matrix =\n", uc.calc_fractionalization_matrix())
+    print("orthogonalization matrix =\n", uc.calc_orthogonalization_matrix())
 
-    print "orth * e =\n", numpy.dot(
-        uc.calc_orthogonalization_matrix(), e)
+    print("orth * e =\n", numpy.dot(
+        uc.calc_orthogonalization_matrix(), e))
 
 
-    print "calc_frac_to_orth"
+    print("calc_frac_to_orth")
     vlist = [
         numpy.array([0.0, 0.0, 0.0]),
         numpy.array([0.5, 0.5, 0.5]),
@@ -325,32 +317,32 @@ def test_module():
     for v in vlist:
         ov = uc.calc_frac_to_orth(v)
         v2 = uc.calc_orth_to_frac(ov)
-        print "----"
-        print "    ",v
-        print "    ",ov
-        print "    ",v2
-        print "----"
+        print("----")
+        print("    ",v)
+        print("    ",ov)
+        print("    ",v2)
+        print("----")
 
 
-    print "================================================="
+    print("=================================================")
 
-    print
+    print()
 
-    print "================================================="
-    print "TEST CASE #2: Reciprocal of above unit cell "
-    print
+    print("=================================================")
+    print("TEST CASE #2: Reciprocal of above unit cell ")
+    print()
 
     ruc = uc.calc_reciprocal_unit_cell()
-    print ruc
-    print "volume      = ", ruc.calc_v()
-    print "cell volume = ", ruc.calc_volume()
+    print(ruc)
+    print("volume      = ", ruc.calc_v())
+    print("cell volume = ", ruc.calc_volume())
 
-    print "================================================="
+    print("=================================================")
 
-    print
+    print()
 
-    print "================================================="
-    print "TEST CASE #3: Orthogonal space symmetry operations"
+    print("=================================================")
+    print("TEST CASE #3: Orthogonal space symmetry operations")
 
     unitx = UnitCell(a           = 64.950,
                      b           = 64.950,
@@ -359,15 +351,15 @@ def test_module():
                      beta        = 90.00,
                      gamma       = 120.00,
                      space_group = "P 32 2 1")
-    print unitx
-    print
+    print(unitx)
+    print()
 
     for symop in unitx.space_group.iter_symops():
-        print "Fractional Space SymOp:"
-        print symop
-        print "Orthogonal Space SymOp:"
-        print unitx.calc_orth_symop(symop)
-        print
+        print("Fractional Space SymOp:")
+        print(symop)
+        print("Orthogonal Space SymOp:")
+        print(unitx.calc_orth_symop(symop))
+        print()
 
 if __name__ == "__main__":
     test_module()

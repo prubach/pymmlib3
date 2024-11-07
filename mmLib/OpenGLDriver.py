@@ -15,16 +15,16 @@ try:
     except ImportError:
         from numpy.linalg import old as linalg
 except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+    from . import NumericCompat as numpy
+    from .NumericCompat import linalg
 
 from OpenGL.GL      import *
 from OpenGL.GLU     import *
 from OpenGL.GLUT    import *
 
-import ConsoleOutput
-import Gaussian
-import AtomMath
+from . import ConsoleOutput
+from . import Gaussian
+from . import AtomMath
 
 try:
     import glaccel

@@ -7,8 +7,8 @@
 try:
     import numpy
 except ImportError:
-    import NumericCompat as numpy
-import ConsoleOutput
+    from . import NumericCompat as numpy
+from . import ConsoleOutput
 
 ## 64 unique rotation matricies
 Rot_Z_mY_X    = numpy.array([[ 0.0, 0.0, 1.0], [ 0.0,-1.0, 0.0], [ 1.0, 0.0, 0.0]], float)

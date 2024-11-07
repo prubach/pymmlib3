@@ -5,11 +5,11 @@
 """Structural database based on mmCIF.
 """
 ## Python
-from __future__ import generators
+
 import copy
 
 ## pymmlib
-import mmCIF
+from . import mmCIF
 
 
 class mmCIFDB(mmCIF.mmCIFData):
@@ -49,7 +49,7 @@ class mmCIFDB(mmCIF.mmCIFData):
     def confirm_table(self, table_name):
         """Return table table_name, create the table if necessary.
         """
-        if not self.has_key(table_name):
+        if table_name not in self:
             table = mmCIF.mmCIFTable(table_name)
             self.append(table)
         else:

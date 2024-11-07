@@ -9,24 +9,16 @@ import math
 import string
 import itertools
 
-try:
-    import numpy
-    try:
-        from numpy.oldnumeric import linear_algebra as linalg
-    except ImportError:
-        from numpy.linalg import old as linalg
-except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+import numpy
 
-import ConsoleOutput
-import Constants
-import GeometryDict
-import AtomMath
-import Library
-import UnitCell
-import Sequence
-import mmCIFDB
+from . import ConsoleOutput
+from . import Constants
+from . import GeometryDict
+from . import AtomMath
+from . import Library
+from . import UnitCell
+from . import Sequence
+from . import mmCIFDB
 
 
 class StructureError(Exception):
@@ -119,7 +111,7 @@ class Structure(object):
         try:
             return self.default_model[chain_idx]
         except TypeError:
-            raise KeyError, chain_idx
+            raise KeyError(chain_idx)
 
     def __iter__(self):
         """Iterates the Chain objects in the Structure.
@@ -139,8 +131,8 @@ class Structure(object):
             try:
                 return self.default_model.__contains__(model_chain_idx)
             except AttributeError:
-                raise KeyError, model_chain_idx
-        raise TypeError, model_chain_idx
+                raise KeyError(model_chain_idx)
+        raise TypeError(model_chain_idx)
 
     def index(self, model_chain):
         """If item is a Model, returns the index of the Model in the
@@ -153,8 +145,8 @@ class Structure(object):
             try:
                 return self.default_model.index(model_chain)
             except AttributeError:
-                raise ValueError, model_chain
-        raise TypeError, model_chain
+                raise ValueError(model_chain)
+        raise TypeError(model_chain)
 
     def sort(self):
         """Sorts all Models and Chains in the Structure according to standard
@@ -172,7 +164,7 @@ class Structure(object):
         """
         assert isinstance(model, Model)
 
-        if self.model_dict.has_key(model.model_id):
+        if model.model_id in self.model_dict:
             raise ModelOverwrite()
 
         ## set default model if not set
@@ -210,7 +202,7 @@ class Structure(object):
         """Return the Model object with the argument model_id, or None if
         not found.
         """
-        if self.model_dict.has_key(model_id):
+        if model_id in self.model_dict:
             return self.model_dict[model_id]
         return None
 
@@ -273,7 +265,7 @@ class Structure(object):
         """
         if self.default_model is None:
             return None
-        if self.default_model.chain_dict.has_key(chain_id):
+        if chain_id in self.default_model.chain_dict:
             return self.default_model.chain_dict[chain_id]
         return None
 
@@ -432,7 +424,7 @@ class Structure(object):
         """Iterates over standard residues in the default Model.
         """
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilter(fpred, self.iter_fragments())
+        return filter(fpred, self.iter_fragments())
 
     def has_non_standard_residues(self):
         """Returns True if there are non-standard residues in the default
@@ -456,7 +448,7 @@ class Structure(object):
         nucleic acid.
         """
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilterfalse(fpred, self.iter_fragments())
+        return itertools.filterfalse(fpred, self.iter_fragments())
 
     def has_waters(self):
         """Returns True if there are waters in the default Model.
@@ -477,7 +469,7 @@ class Structure(object):
         """Iterate over all waters in the default Model.
         """
         fpred = lambda f: f.is_water()
-        return itertools.ifilter(fpred, self.iter_fragments())
+        return filter(fpred, self.iter_fragments())
 
     def add_atom(self, atom, delay_sort = False):
         """Adds an Atom object to the Structure. If a collision occurs, an
@@ -496,10 +488,10 @@ class Structure(object):
         chain_id    = atom.chain_id
         fragment_id = atom.fragment_id
 
-        if model.chain_dict.has_key(chain_id):
+        if chain_id in model.chain_dict:
             chain = model.chain_dict[chain_id]
 
-            if chain.fragment_dict.has_key(fragment_id):
+            if fragment_id in chain.fragment_dict:
                 fragment = chain.fragment_dict[fragment_id]
 
                 if fragment.res_name == atom.res_name:
@@ -573,7 +565,7 @@ class Structure(object):
         visited = {}
         for atm in self.iter_atoms():
             for bond in atm.iter_bonds():
-                if visited.has_key(bond):
+                if bond in visited:
                     continue
                 yield bond
                 visited[bond] = True
@@ -757,7 +749,7 @@ class Model(object):
             return self.chain_dict[chain_idx]
         elif isinstance(chain_idx, int):
             return self.chain_list[chain_idx]
-        raise TypeError, chain_idx
+        raise TypeError(chain_idx)
 
     def __iter__(self):
         """Iterates the Chain objects in the Model.
@@ -771,7 +763,7 @@ class Model(object):
             return self.chain_list.__contains__(chain_idx)
         elif isinstance(chain_idx, str):
             return self.chain_dict.__contains__(chain_idx)
-        raise TypeError, chain_idx
+        raise TypeError(chain_idx)
 
     def index(self, chain):
         """Returns the numeric index of the Chain object in the Model.
@@ -791,7 +783,7 @@ class Model(object):
         """
         assert isinstance(chain, Chain)
 
-        if self.chain_dict.has_key(chain.chain_id):
+        if chain.chain_id in self.chain_dict:
             raise ChainOverwrite()
 
         self.chain_list.append(chain)
@@ -812,7 +804,7 @@ class Model(object):
     def get_chain(self, chain_id):
         """Returns the Chain object matching the chain_id character.
         """
-        if self.chain_dict.has_key(chain_id):
+        if chain_id in self.chain_dict:
             return self.chain_dict[chain_id]
         return None
 
@@ -912,7 +904,7 @@ class Model(object):
 
     def iter_standard_residues(self):
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilter(fpred, self.iter_fragments())
+        return filter(fpred, self.iter_fragments())
 
     def count_non_standard_residues(self):
         n = 0
@@ -927,7 +919,7 @@ class Model(object):
 
     def iter_non_standard_residues(self):
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilterfalse(fpred, self.iter_fragments())
+        return itertools.filterfalse(fpred, self.iter_fragments())
 
     def has_waters(self):
         for frag in self.iter_waters():
@@ -942,7 +934,7 @@ class Model(object):
 
     def iter_waters(self):
         fpred = lambda f: f.is_water()
-        return itertools.ifilter(fpred, self.iter_fragments())
+        return filter(fpred, self.iter_fragments())
 
     def add_atom(self, atom, delay_sort=False):
         assert isinstance(atom, Atom)
@@ -1080,7 +1072,7 @@ class Model(object):
         visited = {}
         for atm in self.iter_atoms():
             for bond in atm.iter_bonds():
-                if visited.has_key(bond):
+                if bond in visited:
                     continue
                 yield bond
                 visited[bond] = True
@@ -1224,7 +1216,7 @@ class Segment(object):
 
                 return self.construct_sub_segment(start, stop)
 
-        raise TypeError, fragment_idx
+        raise TypeError(fragment_idx)
 
     def __iter__(self):
         """Iterate all Fragments contained in the Segment.
@@ -1238,7 +1230,7 @@ class Segment(object):
             return self.fragment_list.__contains__(fragment_idx)
         elif isinstance(fragment_idx, str):
             return self.fragment_dict.__contains__(fragment_idx)
-        raise TypeError, fragment_idx
+        raise TypeError(fragment_idx)
 
     def index(self, fragment):
         """Return the 0-based index of the fragment in the segment list.
@@ -1283,7 +1275,7 @@ class Segment(object):
         assert isinstance(fragment, Fragment)
         assert fragment.chain_id == self.chain_id
 
-        if self.fragment_dict.has_key(fragment.fragment_id):
+        if fragment.fragment_id in self.fragment_dict:
             raise FragmentOverwrite()
 
         self.fragment_list.append(fragment)
@@ -1302,7 +1294,7 @@ class Segment(object):
     def get_fragment(self, fragment_id):
         """Returns the PDB fragment uniquely identified by its fragment_id.
         """
-        if self.fragment_dict.has_key(fragment_id):
+        if fragment_id in self.fragment_dict:
             return self.fragment_dict[fragment_id]
         return None
 
@@ -1332,7 +1324,7 @@ class Segment(object):
 
     def iter_amino_acids(self):
         fpred = lambda f: f.is_amino_acid()
-        return itertools.ifilter(fpred, self.fragment_list)
+        return filter(fpred, self.fragment_list)
 
     def has_nucleic_acids(self):
         for frag in self.fragment_list:
@@ -1349,7 +1341,7 @@ class Segment(object):
 
     def iter_nucleic_acids(self):
         fpred = lambda f: f.is_nucleic_acid()
-        return itertools.ifilter(fpred, self.fragment_list)
+        return filter(fpred, self.fragment_list)
 
     def has_standard_residues(self):
         for frag in self.fragment_list:
@@ -1366,7 +1358,7 @@ class Segment(object):
 
     def iter_standard_residues(self):
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilter(fpred, self.fragment_list)
+        return filter(fpred, self.fragment_list)
 
     def has_non_standard_residues(self):
         for frag in self.fragment_list:
@@ -1383,7 +1375,7 @@ class Segment(object):
 
     def iter_non_standard_residues(self):
         fpred = lambda f: f.is_standard_residue()
-        return itertools.ifilterfalse(fpred, self.fragment_list)
+        return itertools.filterfalse(fpred, self.fragment_list)
 
     def has_waters(self):
         for frag in self.fragment_list:
@@ -1400,7 +1392,7 @@ class Segment(object):
 
     def iter_waters(self):
         fpred = lambda f: f.is_water()
-        return itertools.ifilter(fpred, self.fragment_list)
+        return filter(fpred, self.fragment_list)
 
     def add_atom(self, atom, delay_sort = False):
         """Adds an Atom.
@@ -1410,7 +1402,7 @@ class Segment(object):
         assert atom.chain_id == self.chain_id
 
         ## add new fragment if necessary 
-        if not self.fragment_dict.has_key(atom.fragment_id):
+        if atom.fragment_id not in self.fragment_dict:
 
             if Library.library_is_amino_acid(atom.res_name):
                 fragment = AminoAcidResidue(
@@ -1491,7 +1483,7 @@ class Segment(object):
         visited = {}
         for atm in self.iter_atoms():
             for bond in atm.iter_bonds():
-                if visited.has_key(bond):
+                if bond in visited:
                     continue
                 yield bond
                 visited[bond] = True
@@ -1735,11 +1727,9 @@ class Fragment(object):
         type. If the argument was an integer, then an IndexError is raised.
         If the argument was a string, then a KeyError is raised.
         """
-        if isinstance(name_idx, str):
+        if isinstance(name_idx, str) or isinstance(name_idx, int):
             return self.atom_dict[name_idx]
-        elif isinstance(name_idx, int):
-            return self.atom_list[name_idx]
-        raise TypeError, name_idx
+        raise TypeError(name_idx)
 
     def __iter__(self):
         """Iterates the atoms within the fragment. If the fragment contains
@@ -1755,7 +1745,7 @@ class Fragment(object):
             return self.atom_list.__contains__(atom_idx)
         elif isinstance(atom_idx, str):
             return self.atom_dict.__contains__(atom_idx)
-        raise TypeError, atom_idx
+        raise TypeError(atom_idx)
 
     def index(self, atom):
         """Returns the sequential index of the atom.
@@ -1787,7 +1777,7 @@ class Fragment(object):
                         del self.atom_list[i-ishift]
                     except IndexError:
                         pass
-                    for atmx in atm.itervalues():
+                    for atmx in atm.values():
                         try:
                             del self.atom_dict[atmx.name]
                         except KeyError:
@@ -1816,7 +1806,7 @@ class Fragment(object):
         alt_loc = atom.alt_loc
 
         if alt_loc == "":
-            if not self.alt_loc_dict.has_key(name):
+            if name not in self.alt_loc_dict:
                 ## CASE:
                 ##     add atom without alt_loc partners to the fragment
                 ## procedure:
@@ -1824,7 +1814,7 @@ class Fragment(object):
                 ##     fragment, and raise an AtomOverwrite exception if
                 ##     it is, otherwise, add the atom to the fragment
 
-                if not self.atom_dict.has_key(name):
+                if name not in self.atom_dict:
                     self.atom_order_list.append(atom)
                     self.atom_list.append(atom)
                     self.atom_dict[name] = atom
@@ -1875,9 +1865,9 @@ class Fragment(object):
             ##     sequential order of added atoms
             ##    *place atom in the atom_list and atom_dict 
 
-            if not self.alt_loc_dict.has_key(name):
+            if name not in self.alt_loc_dict:
 
-                if not self.atom_dict.has_key(name):
+                if name not in self.atom_dict:
                     ## CASE:
                     ##     add an atom with alt_loc partners to the
                     ##     fragment for the first time
@@ -1922,9 +1912,9 @@ class Fragment(object):
         """
         assert atom.fragment == self
 
-        if self.alt_loc_dict.has_key(atom.name):
+        if atom.name in self.alt_loc_dict:
             altloc = self.alt_loc_dict[atom.name]
-            if altloc.has_key(atom.alt_loc):
+            if atom.alt_loc in altloc:
                 altloc.remove_atom(atom)
                 if len(altloc) == 0:
                     del self.alt_loc_dict[atom.name]
@@ -1945,13 +1935,13 @@ class Fragment(object):
         then the default alt_loc is used.
         """
         if alt_loc:
-            if self.alt_loc_dict.has_key(name):
+            if name in self.alt_loc_dict:
                 altloc = self.alt_loc_dict[name]
-                if altloc.has_key(alt_loc):
+                if alt_loc in altloc:
                     return altloc[alt_loc]
             return None
         else:
-            if not self.atom_dict.has_key(name):
+            if name not in self.atom_dict:
                 return None
             return self.atom_dict[name]
 
@@ -2003,7 +1993,7 @@ class Fragment(object):
         visited = {}
         for atm in self.iter_atoms():
             for bond in atm.iter_bonds():
-                if not visited.has_key(bond):
+                if bond not in visited:
                     yield bond
                     visited[bond] = True
 
@@ -2047,8 +2037,11 @@ class Fragment(object):
         def find_atom(name):
             try:
                 return self[name]
-            except KeyError:
-                return self[mdesc.alt_atom_dict[name]]
+            except KeyError as ke:
+                if mdesc.alt_atom_dict[name]:
+                    return self[mdesc.alt_atom_dict[name]]
+                else:
+                    raise ke
         for bond in mdesc.bond_list:
             try:
                 atm1 = find_atom(bond["atom1"])
@@ -2418,14 +2411,14 @@ class Altloc(dict):
     """
     def __deepcopy__(self, memo):
         altloc = Altloc()
-        for atom in self.itervalues():
+        for atom in self.values():
             altloc.add_atom(copy.deepcopy(atom, memo))
         return altloc
 
     def __iter__(self):
         """Iterates over all Altloc representations of this Atom.
         """
-        alt_locs = self.keys()
+        alt_locs = list(self.keys())
         alt_locs.sort()
         for alt_loc in alt_locs:
             yield self[alt_loc]
@@ -2433,7 +2426,7 @@ class Altloc(dict):
     def add_atom(self, atom):
         """Adds an atom to the Altloc.
         """
-        if self.has_key(atom.alt_loc) or atom.alt_loc == "":
+        if atom.alt_loc in self or atom.alt_loc == "":
             atom.alt_loc = self.calc_next_alt_loc_id(atom)
 
         self[atom.alt_loc] = atom
@@ -2453,8 +2446,8 @@ class Altloc(dict):
         """
         if len(self) == 0:
             return "A"
-        for alt_loc in string.uppercase:
-            if not self.has_key(alt_loc):
+        for alt_loc in string.ascii_uppercase:
+            if alt_loc not in self:
                 return alt_loc
 
         raise AtomOverwrite("exhausted availible alt_loc labels for "+str(atom))
@@ -2627,7 +2620,7 @@ class Atom(object):
 
         for bond in self.bond_list:
             partner = bond.get_partner(self)
-            if memo.has_key(id(partner)):
+            if id(partner) in memo:
                 partner_cpy = memo[id(partner)]
                 bond_cpy = copy.deepcopy(bond, memo)
 
@@ -2759,7 +2752,7 @@ class Atom(object):
         if self.altloc is None:
             if self.alt_loc == alt_loc:
                 return self
-            raise KeyError, alt_loc
+            raise KeyError(alt_loc)
 
         else:
             return self.altloc[alt_loc]
@@ -2771,7 +2764,7 @@ class Atom(object):
             yield self
 
         else:
-            alt_locs = self.altloc.keys()
+            alt_locs = list(self.altloc.keys())
             alt_locs.sort()
             for alt_loc in alt_locs:
                 yield self.altloc[alt_loc]
@@ -2800,7 +2793,7 @@ class Atom(object):
         try:
             self.fragment.remove_atom(atom)
         except AttributeError:
-            if self.altloc is not None and self.altloc.has_key(atom.alt_loc):
+            if self.altloc is not None and atom.alt_loc in self.altloc:
                 del self.altloc[atom.alt_loc]
 
     def get_alt_loc(self, alt_loc):
@@ -2867,7 +2860,7 @@ class Atom(object):
                     standard_res_bond = standard_res_bond)
             else:
                 ## case 2: self.has no alt_loc, atom has alt_loc
-                for atmx in atom.altloc.itervalues():
+                for atmx in atom.altloc.values():
                     self.create_bond(
                         atom              = atmx,
                         bond_type         = bond_type,
@@ -2879,7 +2872,7 @@ class Atom(object):
         else:
             if atom.altloc is None:
                 ## case 3: self has alt_loc, atom has no alt_loc
-                for (alt_loc, atmx) in self.altloc.iteritems():
+                for (alt_loc, atmx) in self.altloc.items():
                     atmx.create_bond(
                         atom              = atom,
                         bond_type         = bond_type,
@@ -2889,8 +2882,8 @@ class Atom(object):
 
             else:
                 ## case 4: self has alt_loc, atom has alt_loc
-                for (alt_loc, atmx) in self.altloc.iteritems():
-                    if atom.altloc.has_key(alt_loc):
+                for (alt_loc, atmx) in self.altloc.items():
+                    if alt_loc in atom.altloc:
                         atmx.create_bond(
                             atom              = atom.altloc[alt_loc],
                             bond_type         = bond_type,
@@ -2998,7 +2991,7 @@ class Atom(object):
         if self.U is None:
             return 1.0
 
-        evals = linalg.eigenvalues(self.U)
+        evals, _ = numpy.linalg.eig(self.U)
         ansotropy = min(evals) / max(evals)
         return ansotropy
 
@@ -3010,7 +3003,7 @@ class Atom(object):
         if self.U is None:
             return (1.0, 1.0, 1.0)
 
-        e1, e2, e3 = linalg.eigenvalues(self.U)
+        (e1, e2, e3), _ = numpy.linalg.eig(self.U)
         elist = [e1, e2, e3]
         elist.sort()
         e1, e2, e3 = elist
@@ -3594,7 +3587,7 @@ class Site(object):
                 self.fragment_dict_list.append(fragment_dict)
 
         else:
-            if fragment_dict.has_key("fragment"):
+            if "fragment" in fragment_dict:
                 del fragment_dict["fragment"]
 
     def construct_fragments(self):
@@ -3841,10 +3834,10 @@ class AtomList(list):
 def test_module():
     struct = Structure()
 
-    for mx in xrange(1, 4):
+    for mx in range(1, 4):
         mid = str(mx)
         for cid in ["A", "B", "C", "D"]:
-            for fx in xrange(1, 4): 
+            for fx in range(1, 4): 
                 fid = str(fx)
 
                 for name in ["N", "CA", "C", "O"]:
@@ -3864,18 +3857,18 @@ def test_module():
                         struct.add_atom(atm)
 
     for cx in struct.iter_chains():
-        print "iter_chains: ",cx
+        print("iter_chains: ",cx)
     for fx in struct.iter_fragments():
-        print "iter_fragments: ",fx
+        print("iter_fragments: ",fx)
         for ax in fx.iter_all_atoms():
-            print "iter_all_atoms: ",ax
+            print("iter_all_atoms: ",ax)
 
     for ax in struct.iter_atoms():
-        print "iter_atoms: ",ax
+        print("iter_atoms: ",ax)
 
     struct.set_default_alt_loc("C")
     for ax in struct.iter_atoms():
-        print "iter_atoms: ",ax
+        print("iter_atoms: ",ax)
 
 
     ## make some exceptions happen
@@ -3888,7 +3881,7 @@ def test_module():
         fragment_id = "1")
 
     for a in struct.iter_atoms():
-        print "WARNING! Bad atom name: ", a
+        print("WARNING! Bad atom name: ", a)
 
 if __name__ == "__main__":
     test_module()

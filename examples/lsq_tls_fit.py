@@ -11,30 +11,30 @@ import numpy
 from mmLib import FileIO, Structure, TLS, Constants
 
 def usage():
-    print "lsq_tls_fit.py [-s] [-t <tlsin>] [-o <tlsout>]"
-    print "               [-p <pdbout>] <structure file>"
-    print
-    print "description:"
-    print "    Performs a least squares fit of TLS tensors to the"
-    print "    temperature factors of the given structure file.  If"
-    print "    no TLS groups are defined by the TLSIN file, then"
-    print "    one group is created per chain."
-    print
-    print "    -t <tlsin>  Use the TLSIN file for defining groups and"
-    print "                calculating atomic ADPs.  If no tensors exist"
-    print "                in the group, then a least squares fit"
-    print "                is automatically preformed."
-    print
-    print
-    print "    -o <tlsout> Write a TLSOUT file with the LSQ fit tensors."
-    print
-    print "    -p <pdbout> Write a PDB file to the given path containing"
-    print "                the TLS predicted anisotropic tempature factors"
-    print "                unless the -s option is given (see below)."
-    print
-    print "    -s          Set the B factor of TLS group atoms to 0.0."
-    print "                in the pdbout file."
-    print
+    print("lsq_tls_fit.py [-s] [-t <tlsin>] [-o <tlsout>]")
+    print("               [-p <pdbout>] <structure file>")
+    print()
+    print("description:")
+    print("    Performs a least squares fit of TLS tensors to the")
+    print("    temperature factors of the given structure file.  If")
+    print("    no TLS groups are defined by the TLSIN file, then")
+    print("    one group is created per chain.")
+    print()
+    print("    -t <tlsin>  Use the TLSIN file for defining groups and")
+    print("                calculating atomic ADPs.  If no tensors exist")
+    print("                in the group, then a least squares fit")
+    print("                is automatically preformed.")
+    print()
+    print()
+    print("    -o <tlsout> Write a TLSOUT file with the LSQ fit tensors.")
+    print()
+    print("    -p <pdbout> Write a PDB file to the given path containing")
+    print("                the TLS predicted anisotropic tempature factors")
+    print("                unless the -s option is given (see below).")
+    print()
+    print("    -s          Set the B factor of TLS group atoms to 0.0.")
+    print("                in the pdbout file.")
+    print()
 
 
 def main(path, opt_dict):
@@ -43,12 +43,12 @@ def main(path, opt_dict):
     tls_group_list = []
 
     ## make the TLS groups
-    if opt_dict.has_key("-t"):
+    if "-t" in opt_dict:
 
         try:
             fil = open(opt_dict["-t"], "r")
         except IOError:
-            print "[ERROR]: TLSIN File not found %s" % (opt_dict["-t"])
+            print("[ERROR]: TLSIN File not found %s" % (opt_dict["-t"]))
             sys.exit(-1)
         
         tls_file = TLS.TLSFile()
@@ -79,7 +79,7 @@ def main(path, opt_dict):
             tls_group_list.append(tls)
             tls.tls_desc = tls_desc
 
-            print "Creating TLS Group: %s" % (tls.name)
+            print("Creating TLS Group: %s" % (tls.name))
 
     ## fit TLS groups and write output
     tls_file = TLS.TLSFile()
@@ -88,14 +88,14 @@ def main(path, opt_dict):
     ## preform a LSQ fit if necessary
     for tls in tls_group_list:
 
-        print "[TLS GROUP  %s]" % (tls.name)
+        print("[TLS GROUP  %s]" % (tls.name))
 
         ## if the TLS group is null, then perform a LSQ-TLS fit
         if tls.is_null():
-            print "Null Group: Running TLS-LSQ"
+            print("Null Group: Running TLS-LSQ")
             
             if len(tls)<20:
-                print "ERROR: Not Enough Atoms in TLS Group."
+                print("ERROR: Not Enough Atoms in TLS Group.")
                 continue
 
             tls.origin = tls.calc_centroid()
@@ -105,18 +105,18 @@ def main(path, opt_dict):
         tls.tls_desc.set_tls_group(tls)
         tls_file.tls_desc_list.append(tls.tls_desc)
 
-    if opt_dict.has_key("-o"):
-        print "Saving TLSIN: %s" % (opt_dict["-o"])
+    if "-o" in opt_dict:
+        print("Saving TLSIN: %s" % (opt_dict["-o"]))
         tls_file.save(open(opt_dict["-o"], "w"))
 
 
     ## write out a PDB file with 0.0 tempature factors for all
     ## atoms in TLS groups
-    if opt_dict.has_key("-p"):
+    if "-p" in opt_dict:
 
         for tls in tls_group_list:
             for atm, Utls in tls.iter_atm_Utls():
-                if opt_dict.has_key("-s"):
+                if "-s" in opt_dict:
                     atm.temp_factor = 0.0
                     atm.U = None
                 else:
@@ -124,7 +124,7 @@ def main(path, opt_dict):
                     atm.U = Utls
 
         ## save the struct
-        print "Saving XYZIN: %s" % (opt_dict["-p"])
+        print("Saving XYZIN: %s" % (opt_dict["-p"]))
         FileIO.SaveStructure(file = opt_dict["-p"], struct = struct)
 
 

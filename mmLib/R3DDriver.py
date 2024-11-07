@@ -17,13 +17,13 @@ try:
     except ImportError:
         from numpy.linalg import old as linalg
 except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+    from . import NumericCompat as numpy
+    from .NumericCompat import linalg
 
-import ConsoleOutput
-import Constants
-import Gaussian
-import AtomMath
+from . import ConsoleOutput
+from . import Constants
+from . import Gaussian
+from . import AtomMath
 
 ## constants
 MARGIN          = 1.15
@@ -226,7 +226,7 @@ class Raster3DDriver(object):
             stdin.write("\n".join(self.header_list))
             stdin.write("\n")
             self.glr_write_objects(stdin)
-        except IOError, err:
+        except IOError as err:
             ConsoleOutput.warning("IOError while executing %s" % (self.render_program_path))
             ConsoleOutput.warning(str(err))
             return

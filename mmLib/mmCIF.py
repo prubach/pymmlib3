@@ -7,11 +7,12 @@ structures where they can be further processed. The data structures can also
 be constructed and written back out as mmCIF. A CIF dictionary parser is also 
 included as a specialized version of the mmCIF parser.
 """
-from __future__ import generators
+
 
 import re
 import copy
 import itertools
+from curses import has_key
 
 ##
 ## DATA STRUCTURES FOR HOLDING CIF INFORMATION
@@ -57,7 +58,7 @@ class mmCIFRow(dict):
         
     def __deepcopy__(self, memo):
         cif_row = mmCIFRow()
-        for key, val in self.iteritems():
+        for key, val in self.items():
             cif_row[key] = val
         return cif_row
 
@@ -69,16 +70,16 @@ class mmCIFRow(dict):
         dict.__setitem__(self, column.lower(), value)
 
     def __getattr__(self, name):
-        try:
-            return self[name] 
-        except KeyError:
+        if name in self:
+            return self[name]
+        else:
             raise AttributeError(name)
 
     def __getitem__(self, column):
-        return dict.__getitem__(self, column.lower())
+        return self.get(column.lower())
 
     def getitem_lower(self, clower):
-        return dict.__getitem__(self, clower)
+        return self.get(clower)
 
     def __delitem__(self, column):
         dict.__delitem__(self, column.lower())
@@ -90,10 +91,10 @@ class mmCIFRow(dict):
         return dict.get(self, clower, default)
 
     def has_key(self, column):
-        return dict.has_key(self, column.lower())
+        return column.lower() in self.keys()
 
     def has_key_lower(self, clower):
-        return dict.has_key(self, clower)
+        return clower in self.keys()
     
 
 class mmCIFTable(list):
@@ -129,9 +130,9 @@ class mmCIFTable(list):
         return len(self) <= 1
 
     def __getattr__(self, name):
-        try:
+        if name in self:
             return self[name] 
-        except KeyError:
+        else:
             raise AttributeError(name)
     
     def __getitem__(self, x):
@@ -144,11 +145,14 @@ class mmCIFTable(list):
 
         elif isinstance(x, str):
             try:
-                return self[0][x]
+                if self[0] and x in self[0].keys():
+                    return self[0][x]
+                else:
+                    raise KeyError
             except (IndexError, KeyError):
                 raise KeyError
 
-        raise TypeError, x
+        raise TypeError(x)
     
     def __setitem__(self, x, value):
         assert value is not None
@@ -169,9 +173,9 @@ class mmCIFTable(list):
         self.remove(self[i])
 
     def get(self, x, default = None):
-        try:
+        if x in self.keys():
             return self[x]
-        except KeyError:
+        else:
             return default
 
     def append(self, row):
@@ -230,20 +234,20 @@ class mmCIFTable(list):
         """
         clower_used = {}
         for cif_row in self:
-            for clower in cif_row.iterkeys():
+            for clower in cif_row.keys():
                 clower_used[clower] = True          
                 if clower not in self.columns_lower:
                     self.append_column(clower)
-        for clower in self.columns_lower.keys():
-            if not clower_used.has_key(clower):
+        for clower in list(self.columns_lower.keys()):
+            if clower not in clower_used:
                 self.remove_column(clower)
 
     def get_row1(self, clower, value):
         """Return the first row which which has column data matching value.
         """
         fpred = lambda r: r.get_lower(clower) == value
-        itertools.ifilter(fpred, self)
-        for row in itertools.ifilter(fpred, self):
+        filter(fpred, self)
+        for row in filter(fpred, self):
             return row
         return None
 
@@ -334,10 +338,11 @@ class mmCIFData(list):
         return id(self) == id(other)
 
     def __getattr__(self, name):
-        try:
-            return self[name] 
-        except KeyError:
-            raise AttributeError(name)
+        return self[name]
+        # if name in self.keys():
+        #     return self[name]
+        # else:
+        #     raise AttributeError(name)
     
     def __getitem__(self, x):
         if isinstance(x, int):
@@ -348,9 +353,9 @@ class mmCIFData(list):
             for ctable in self:
                 if ctable.name.lower() == name:
                     return ctable
-            raise KeyError, x
+            raise KeyError(x)
 
-        raise TypeError, x
+        raise TypeError(x)
 
     def __setitem__(self, x, table):
         """
@@ -403,27 +408,17 @@ class mmCIFData(list):
         list.remove(self, table)
 
     def has_key(self, x):
-        try:
-            self[x]
-        except KeyError:
-            return False
-        else:
-            return True
+        return x in self.keys()
 
     def get(self, x, default = None):
-        try:
+        if has_key(x):
             return self[x]
-        except KeyError:
+        else:
             return default
 
     def has_table(self, x):
-        try:
-            self[x]
-        except KeyError:
-            return False
-        else:
-            return True
-        
+        return has_key(x)
+
     def get_table(self, name):
         """Looks up and returns a stored mmCIFTable class by its name. This
         name is the section key in the mmCIF file.
@@ -491,9 +486,9 @@ class mmCIFFile(list):
         return id(self) == id(other)
 
     def __getattr__(self, name):
-        try:
+        if name in self:
             return self[name] 
-        except KeyError:
+        else:
             raise AttributeError(name)
 
     def __getitem__(self, x):
@@ -507,9 +502,9 @@ class mmCIFFile(list):
             for cdata in self:
                 if cdata.name.lower() == name:
                     return cdata
-            raise KeyError, x
+            raise KeyError(x)
 
-        raise TypeError, x
+        raise TypeError(x)
     
     def __delitem__(self, x):
         """Remove a mmCIFData by index or data name. Raises IndexError
@@ -546,9 +541,9 @@ class mmCIFFile(list):
         return False
 
     def get(self, x, default = None):
-        try:
+        if x in self.keys():
             return self[x]
-        except KeyError:
+        else:
             return default
         
     def load_file(self, fil):
@@ -612,7 +607,7 @@ class mmCIFFileParser(object):
 
         try:
             self.parse(token_iter, cif_file)
-        except StopIteration:
+        except RuntimeError:
             pass
         else:
             raise mmCIFError()
@@ -652,7 +647,7 @@ class mmCIFFileParser(object):
         ## ignore anything in the input file until a reserved word is
         ## found
         while True:
-            tblx, colx, strx, tokx = token_iter.next()
+            tblx, colx, strx, tokx = next(token_iter)
             if tokx is None:
                 continue
             rword, name = self.split_token(tokx)
@@ -695,9 +690,14 @@ class mmCIFFileParser(object):
             ## PROCESS DATA IN RD_SINGLE STATE
             ##
             if state == "RD_SINGLE":
-                try:
+                if tblx in cif_table_cache.keys():
                     cif_table = cif_table_cache[tblx]
-                except KeyError:
+                    try:
+                        cif_row = cif_table[0]
+                    except IndexError:
+                        self.syntax_error("bad token #3")
+                        return
+                else:
                     cif_table = cif_table_cache[tblx] = mmCIFTable(tblx)
 
                     try:
@@ -708,12 +708,6 @@ class mmCIFFileParser(object):
 
                     cif_row = mmCIFRow()
                     cif_table.append(cif_row)
-                else:
-                    try:
-                        cif_row = cif_table[0] 
-                    except IndexError:
-                        self.syntax_error("bad token #3")
-                        return
 
                 ## check for duplicate entries
                 if colx in cif_table.columns:
@@ -724,7 +718,7 @@ class mmCIFFileParser(object):
 
                 ## get the next token from the file, it should be the data
                 ## keyed by the previous token
-                tx, cx, strx, tokx = token_iter.next()
+                tx, cx, strx, tokx = next(token_iter)
                 if tx is not None or (strx is None and tokx is None):
                     self.syntax_error("missing data for _%s.%s" % (tblx,colx))
 
@@ -745,7 +739,7 @@ class mmCIFFileParser(object):
                 else:
                     self.syntax_error("bad token #4")
 
-                tblx, colx, strx, tokx = token_iter.next()
+                tblx, colx, strx, tokx = next(token_iter)
                 continue
 
             ###
@@ -757,13 +751,13 @@ class mmCIFFileParser(object):
             elif state == "RD_LOOP":
                 ## the first section.subsection (tblx.colx) is read
                 ## to create the section(table) name for the entire loop
-                tblx, colx, strx, tokx = token_iter.next()
+                tblx, colx, strx, tokx = next(token_iter)
 
                 if tblx is None or colx is None:
                     self.syntax_error("bad token #5")
                     return
                 
-                if cif_table_cache.has_key(tblx):
+                if tblx in cif_table_cache:
                     self.syntax_error("_loop section duplication")
                     return
 
@@ -779,7 +773,7 @@ class mmCIFFileParser(object):
 
                 ## read the remaining subsection definitions for the loop_
                 while True:
-                    tblx, colx, strx, tokx = token_iter.next()
+                    tblx, colx, strx, tokx = next(token_iter)
                     
                     if tblx is None:
                         break
@@ -813,7 +807,13 @@ class mmCIFFileParser(object):
                         elif strx is not None:
                             cif_row[col] = strx
 
-                        tblx,colx,strx,tokx = token_iter.next()
+#                        try:
+#                            if tokx=='9.653999':
+#                                print('error')
+                        tblx, colx, strx, tokx = next(token_iter)
+#                        except RuntimeError as e:
+#                            continue
+
 
                     ## the loop ends when one of these conditions is met:
                     ## condition #1: a new table is encountered
@@ -834,7 +834,7 @@ class mmCIFFileParser(object):
                 cif_table_cache = dict()
                 cif_table = None
 
-                tblx,colx,strx,tokx = token_iter.next()
+                tblx,colx,strx,tokx = next(token_iter)
 
             elif state == "RD_SAVE":
                 cif_data = mmCIFSave(tokx[5:])
@@ -842,20 +842,20 @@ class mmCIFFileParser(object):
                 cif_table_cache = dict()
                 cif_table = None
 
-                tblx,colx,strx,tokx = token_iter.next()
+                tblx,colx,strx,tokx = next(token_iter)
                 
 
     def gen_token_iter(self, fileobj):
         re_tok = re.compile(
             r"(?:"
 
-             "(?:_(.+?)[.](\S+))"               "|"  # _section.subsection
+             r"(?:_(.+?)[.](\S+))"               "|"  # _section.subsection
 
-             "(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
+             r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
 
-             "(?:\s*#.*$)"                      "|"  # comments
+             r"(?:\s*#.*$)"                      "|"  # comments
 
-             "(\S+)"                                 # unquoted tokens
+             r"(\S+)"                                 # unquoted tokens
 
              ")")
 
@@ -863,7 +863,7 @@ class mmCIFFileParser(object):
 
         ## parse file, yielding tokens for self.parser()
         while True:
-            ln = file_iter.next()
+            ln = next(file_iter)
             self.line_number += 1
 
             ## skip comments
@@ -874,7 +874,7 @@ class mmCIFFileParser(object):
             if ln.startswith(";"):
                 lmerge = [ln[1:]]
                 while True:
-                    ln = file_iter.next()
+                    ln = next(file_iter)
                     self.line_number += 1
                     if ln.startswith(";"):
                         break
@@ -1009,13 +1009,12 @@ class mmCIFFileWriter(object):
             cif_key = "_%s.%s" % (cif_table.name, col)
             l = [cif_key.ljust(kmax)]
 
-            try:
+            if row.has_key(col):
                 x0 = row[col]
-            except KeyError:
+                x, dtype = self.data_type(x0)
+            else:
                 x = "?"
                 dtype = "token"
-            else:
-                x, dtype = self.data_type(x0)
 
             if dtype == "token":
                 if len(x) > vmax:
@@ -1052,14 +1051,9 @@ class mmCIFFileWriter(object):
         for row in cif_table:
             for col in cif_table.columns:
                 ## get data and data type
-                try:
+                if row.has_key(col):
                     x0 = row[col]
-                except KeyError:
-                    lenx  = 1
-                    dtype = "token"
-                else:
                     x, dtype = self.data_type(x0)
-
                     ## determine write length of data
                     if dtype == "token":
                         lenx = len(x)
@@ -1067,10 +1061,22 @@ class mmCIFFileWriter(object):
                         lenx = len(x) + 2
                     else:
                         lenx = 0
+                else:
+                    lenx  = 1
+                    dtype = "token"
 
-                try:
+                # try:
+                #     x0 = row[col]
+                # except KeyError:
+                #     lenx  = 1
+                #     dtype = "token"
+                # else:
+                #     x, dtype = self.data_type(x0)
+
+
+                if col in col_len_map.keys():
                     col_dtype = col_dtype_map[col]
-                except KeyError:
+                else:
                     col_dtype_map[col] = dtype
                     col_len_map[col]   = lenx
                     continue
@@ -1147,9 +1153,9 @@ class mmCIFFileWriter(object):
                     add_space = True
 
                 elif dtype == "mstring":
-                    try:
+                    if col in row.keys():
                         listx.append(self.form_mstring(row[col]))
-                    except KeyError:
+                    else:
                         listx.append(".\n")
                     add_space = False
 
@@ -1172,7 +1178,7 @@ def test_module():
     try:
         path = sys.argv[1]
     except IndexError:
-        print "usage: mmCIF.py <mmCIF file path>"
+        print("usage: mmCIF.py <mmCIF file path>")
         raise SystemExit
 
     cif = mmCIFDictionary()

@@ -5,7 +5,7 @@
 """Geometry hasing/fast lookup classes.
 """
 
-from __future__ import generators
+
 import random
 import math
 import itertools
@@ -40,7 +40,7 @@ class XYZDict(object):
 
         geom_tuple = (position, item)
 
-        if self.geom_dict.has_key(geom_key):
+        if geom_key in self.geom_dict:
             self.geom_dict[geom_key].append(geom_tuple)
         else:
             self.geom_dict[geom_key] = [geom_tuple]
@@ -60,12 +60,12 @@ class XYZDict(object):
                     geom_list.remove(geom_tuple)
                     return
 
-        raise ValueError, "GeometryDict.remove(x) x not in GeometryDict"
+        raise ValueError("GeometryDict.remove(x) x not in GeometryDict")
 
     def iter_all(self):
         """Iter all items
         """
-        for geom_list in self.geom_dict.values():
+        for geom_list in list(self.geom_dict.values()):
             for geom_tuple in geom_list:
                 yield geom_tuple
 
@@ -76,9 +76,9 @@ class XYZDict(object):
         center_geom_key = self.calc_geom_key(position)
         bounding_cube_blocks = int(radius / self.resolution) + 1
 
-        for i in xrange(-bounding_cube_blocks, bounding_cube_blocks+1):
-            for j in xrange(-bounding_cube_blocks, bounding_cube_blocks+1):
-                for k in xrange(-bounding_cube_blocks, bounding_cube_blocks+1):
+        for i in range(-bounding_cube_blocks, bounding_cube_blocks+1):
+            for j in range(-bounding_cube_blocks, bounding_cube_blocks+1):
+                for k in range(-bounding_cube_blocks, bounding_cube_blocks+1):
 
                     geom_key = ( center_geom_key[0] + i,
                                  center_geom_key[1] + j,
@@ -118,7 +118,7 @@ class XYZDict(object):
             for geom_tuple2 in self.iter_cube_intersection(
                 geom_tuple1[0], distance):
 
-                if visited.has_key(geom_tuple2[1]):
+                if geom_tuple2[1] in visited:
                     continue
 
                 p1 = geom_tuple1[0]
@@ -137,11 +137,11 @@ class XYZDict(object):
 ### <testing>
 def test_module():
     import sys
-    import FileIO
+    from . import FileIO
     
     struct = FileIO.LoadStructure(fil=sys.argv[1])
 
-    print "Structure Loaded"
+    print("Structure Loaded")
 
     gdict = XYZDict(2.0)
 
@@ -150,7 +150,7 @@ def test_module():
         gdict.add(atm.position, atm)
         cnt += 1
 
-    print "Hashed %d Atoms" % (cnt)
+    print("Hashed %d Atoms" % (cnt))
 
     cnt = 0
     for (p1, atm1),(p2,atm2), dist in gdict.iter_contact_distance(1.9):
@@ -158,7 +158,7 @@ def test_module():
         #d = math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 + (p1[2]-p2[2])**2)
         #print atm1, atm2, "%6.2f" % (d)
 
-    print "%d Bonds" % (cnt)
+    print("%d Bonds" % (cnt))
                 
 if __name__=="__main__":
     test_module()

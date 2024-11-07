@@ -13,7 +13,7 @@ import copy
 from mmLib.mmCIF import mmCIFFile
 
 def usage():
-    print """
+    print("""
     usage: python make_library.py <component.cif file>
 
     Utility to create the mmLib monomer library located
@@ -23,10 +23,10 @@ def usage():
     When this utility is run, it creates the Monomers directory in the
     current working directory. To use it, it must be moved to its
     loading location at mmLib/Data/Monomers.
-    """
+    """)
 
 def main(path):
-    print "parsing %s" % (path)
+    print("parsing %s" % (path))
 
     cif_file = mmCIFFile()
     cif_file.load_file(path)
@@ -41,7 +41,7 @@ def main(path):
 
         save_path = os.path.join(mkdir_path, "%s.cif" % (cif_data.name))
 
-        print "saving %s" % (save_path)
+        print("saving %s" % (save_path))
 
         cf = mmCIFFile()
         cf.append(copy.deepcopy(cif_data))

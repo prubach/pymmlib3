@@ -97,17 +97,17 @@ def find_lib_paths(library, include):
         shared_libs = glob.glob(lib_glob)
 
         if len(shared_libs)==0:
-            print lib_glob
+            print(lib_glob)
             continue
 
-        print lib_glob + "*"
+        print(lib_glob + "*")
 
         found_lib_path = lib_path
         found_library  = shared_libs[0]
 
         inc_check = os.path.join(inc_path, include)
 
-        print "Checking Library/Include: %s %s" % (found_library, inc_check)
+        print("Checking Library/Include: %s %s" % (found_library, inc_check))
 
         if not os.path.isfile(inc_check):
             continue
@@ -152,7 +152,7 @@ def library_data(opts):
 def pdbmodule_extension():
     """Add the PDB Accelerator module.
     """
-    print "PDB C Module (pdbmodule)"
+    print("PDB C Module (pdbmodule)")
     ext = Extension(
         "mmLib.pdbmodule", 
         ["src/pdbmodule.c"],
@@ -166,7 +166,7 @@ def pdbmodule_extension():
 def glaccel_extension():
     """Add the OpenGL Accelorator module.
     """
-    print "OpenGL C Module (glaccel)"
+    print("OpenGL C Module (glaccel)")
 
     glaccel_libs = [
         {"library":    "m",
@@ -214,16 +214,16 @@ def glaccel_extension():
 
         lib_path, inc_path, library_path = find_lib_paths(lib, inc)
 
-        print "  Searching For: %s" % (desc)
+        print("  Searching For: %s" % (desc))
 
         if lib_path is None and inc_path is None:
-            print "    ERROR: Library Not Found: %s" % (lib)
+            print("    ERROR: Library Not Found: %s" % (lib))
             return None
         elif lib_path is not None and inc_path is None:
-            print "    ERROR: Header Files Not Found for Library: %s" % (lib)
+            print("    ERROR: Header Files Not Found for Library: %s" % (lib))
             return None
 
-        print "    Found Library: %s" % (library_path)
+        print("    Found Library: %s" % (library_path))
 
         if inc_path not in include_dirs:
             include_dirs.append(inc_path)
@@ -246,35 +246,35 @@ def glaccel_extension():
 def extension_list(opts):
     """Assemble the list of C extensions which need to be compiled.
     """
-    print "="*79
-    print "Checking Libraries and Headers for C Compiled Modules"
-    print "-"*79
+    print("="*79)
+    print("Checking Libraries and Headers for C Compiled Modules")
+    print("-"*79)
 
     ext_list = []
 
     if not opts["pdb"]:
-        print "  USER_OPTION: PDB module will NOT be built."
+        print("  USER_OPTION: PDB module will NOT be built.")
     else:
         pdbmodule = pdbmodule_extension()
         if pdbmodule is not None:
-            print "  SUCCESS: PDB Module will be built."
+            print("  SUCCESS: PDB Module will be built.")
             ext_list.append(pdbmodule)
         else:
-            print "  FAILURE: PDB Module will NOT be built."
+            print("  FAILURE: PDB Module will NOT be built.")
 
-    print "-"*79
+    print("-"*79)
 
     if not opts["opengl"]:
-        print "  USER OPTION: OpenGL module will NOT be built."
+        print("  USER OPTION: OpenGL module will NOT be built.")
     else:
         glaccel = glaccel_extension()
         if glaccel is not None:
-            print "  SUCCESS: OpenGL Module will be built."
+            print("  SUCCESS: OpenGL Module will be built.")
             ext_list.append(glaccel)
         else:
-            print "  FAILURE: OpenGL Module will NOT be built."
+            print("  FAILURE: OpenGL Module will NOT be built.")
 
-    print "="*79
+    print("="*79)
 
     return ext_list
 
@@ -304,72 +304,72 @@ def make_doc(opts):
 
 def check_deps_numeric(opts):
     ## check NumPy
-    print "Checking for NumPy..."
+    print("Checking for NumPy...")
     try:
         import numpy
     except ImportError:
-        print "ERROR: NumPy not found."
+        print("ERROR: NumPy not found.")
     else:
-        print "OK:    NumPy found."
+        print("OK:    NumPy found.")
 
 def check_deps_opengl(opts):
     if not opts["opengl"]:
         return
 
     ## check PyOpenGL
-    print "Checking for Python OpenGL Bindings..."
+    print("Checking for Python OpenGL Bindings...")
     try:
         import OpenGL.GL
     except ImportError:
-        print "ERROR: OpenGL.GL not found."
+        print("ERROR: OpenGL.GL not found.")
     else:
-        print "OK:    OpenGL.GL found."
+        print("OK:    OpenGL.GL found.")
 
     try:
         import OpenGL.GLU
     except ImportError:
-        print "ERROR: OpenGL.GLU not found."
+        print("ERROR: OpenGL.GLU not found.")
     else:
-        print "OK:    OpenGL.GLU found."
+        print("OK:    OpenGL.GLU found.")
 
     try:
         import OpenGL.GLUT
     except ImportError:
-        print "ERROR: OpenGL.GLUT not found. PyOpenGL may need to be"
-        print "       rebuilt after installing GLUT or FreeGLUT."
+        print("ERROR: OpenGL.GLUT not found. PyOpenGL may need to be")
+        print("       rebuilt after installing GLUT or FreeGLUT.")
     else:
-        print "OK:    OpenGL.GLUT found."
+        print("OK:    OpenGL.GLUT found.")
 
     ## check PyGTK >= 2.0
-    print "Checking for Python GTK+ Bindings..."
+    print("Checking for Python GTK+ Bindings...")
     try:
         import pygtk
         pygtk.require("2.0")
     except (ImportError, AssertionError):
-        print "ERROR: PyGTK not found. PyGTK 2.0 required."
+        print("ERROR: PyGTK not found. PyGTK 2.0 required.")
     else:
-        print "OK:    PyGTK found."
+        print("OK:    PyGTK found.")
 
     ## check of PyGTKGLExt
-    print "Checking for Python GTK+ OpenGL Widget Bindings..."
+    print("Checking for Python GTK+ OpenGL Widget Bindings...")
     try:
         import gtk.gtkgl
     except ImportError:
-        print "ERROR: PyGtkGLExt not found."
+        print("ERROR: PyGtkGLExt not found.")
     else:
-        print "OK:    PyGtkGLExt found."
+        print("OK:    PyGtkGLExt found.")
 
 def check_deps(opts):
     """Checks for all required dependancies.
     XXX: This is only checking for the Python modules.
     """
 
-    print "="*79
-    print "Running Python Depancy Checks"
-    print "-"*79
+    print("="*79)
+    print("Running Python Depancy Checks")
+    print("-"*79)
 
     ## check Python version
-    print "Checking for Python Interpreter..."
+    print("Checking for Python Interpreter...")
 
     (major, minor, mminor, junk1, junk2) = sys.version_info
     ver_string = "%d.%d.%d" % (major, minor, mminor)
@@ -385,52 +385,52 @@ def check_deps(opts):
                 too_old = True
 
     if too_old is True:
-        print "ERROR: Python %s too old version >= 2.4.0 required." % (
-            ver_string)
+        print("ERROR: Python %s too old version >= 2.4.0 required." % (
+            ver_string))
     else:
-        print "OK:    Python %s Found." % (ver_string)
+        print("OK:    Python %s Found." % (ver_string))
 
     ## check Python distutils
     if DISTUTILS_FOUND is False:
-        print "ERROR: Python Distutils not found. You may need to install"
-        print "       the python-devel package for your Linux distribution."
+        print("ERROR: Python Distutils not found. You may need to install")
+        print("       the python-devel package for your Linux distribution.")
     else:
-        print "OK:    Python Distutils found."
+        print("OK:    Python Distutils found.")
 
     check_deps_numeric(opts)
     check_deps_opengl(opts)
 
-    print "=" * 79
+    print("=" * 79)
 
 
 def buildlib(opts):
     """Download and construct the mmLib monomer library.
     """
-    import urllib
+    import urllib.request, urllib.parse, urllib.error
 
     LIB_FILE = os.path.join("mmLib", "Data", "Monomers.zip")
     LIB_PATH = os.path.join("mmLib", "Data", "Monomers")
     TMP_PATH = "public-component-erf.cif"
     URL      = "http://pdb.rutgers.edu/public-component-erf.cif"
 
-    print "[BUILDLIB] downloading %s" % (URL)
+    print("[BUILDLIB] downloading %s" % (URL))
 
     fil = open(TMP_PATH, "w")
 
-    opener = urllib.FancyURLopener()
+    opener = urllib.request.FancyURLopener()
     con = opener.open(URL)
     for ln in con.readlines():
         fil.write(ln)
     con.close()
     fil.close()
 
-    print "[BUILDLIB] constructing library from %s" % (TMP_PATH)
+    print("[BUILDLIB] constructing library from %s" % (TMP_PATH))
 
     import mmLib.mmCIF
 
     if opts["zip"]:
         import zipfile
-        import cStringIO
+        import io
         zf = zipfile.ZipFile(LIB_FILE, "w")
 
     cif_file = mmLib.mmCIF.mmCIFFile()
@@ -446,8 +446,8 @@ def buildlib(opts):
         cf.append(cif_data)
 
         if opts["zip"]:
-            print "[BUILDLIB] writing %s" % (cif_data.name)
-            sf = cStringIO.StringIO()
+            print("[BUILDLIB] writing %s" % (cif_data.name))
+            sf = io.StringIO()
             cf.save_file(sf)
             zf.writestr(cif_data.name, sf.getvalue())
             sf.close()
@@ -456,7 +456,7 @@ def buildlib(opts):
             if not os.path.isdir(mkdir_path):
                 os.mkdir(mkdir_path)
             save_path = os.path.join(mkdir_path, "%s.cif" % (cif_data.name))
-            print "[BUILDLIB] writing %s" % (save_path)
+            print("[BUILDLIB] writing %s" % (save_path))
             cf.save_file(save_path)
 
     if opts["zip"]:
@@ -475,7 +475,7 @@ def check_pymmlib_options():
         }
 
     opts = {}
-    for opt, default in opt_defaults.iteritems():
+    for opt, default in opt_defaults.items():
         opts[opt] = default
         flag = "--with-" + opt
         if flag in sys.argv:
@@ -492,41 +492,41 @@ def check_pymmlib_options():
 def usage():
     """Print setup.py usage.
     """
-    print "SYNOPSIS"
-    print "    python setup.py <command>"
-    print
-    print "DESCRIPTION"
-    print "    mmLib build/install program based on the Python"
-    print "    distutils package. This setup.py script has several"
-    print "    features not found in most Python seutp.py scrips."
-    print
-    print "COMMANDS"
-    print "    build"
-    print "        Comples/builds mmLib C modules and preps Python"
-    print "        files for installation."
-    print "    install"
-    print "        Installs all mmLib files into the Python library"
-    print "        directory."
-    print "    checkdeps"
-    print "        Checks for all dependant Python modules used by"
-    print "        the mmLib library and associated applications."
-    print "        This produces a nice report to help you figure out"
-    print "        what dependancies need to be installed."
-    print "        See INSTALL.txt for more details."
-    print "    doc"
-    print "        Build the mmLib developers documentation using the"
-    print "        Epidoc program."
-    print "    buildlib"
-    print "        Download the RCSB monomer library from"
-    print "        http://pdb.rutgers.edu/public-component-erf.cif and"
-    print "        use it to build the mmLib monomer library in"
-    print "        mmLib/Data/Monomers"
+    print("SYNOPSIS")
+    print("    python setup.py <command>")
+    print()
+    print("DESCRIPTION")
+    print("    mmLib build/install program based on the Python")
+    print("    distutils package. This setup.py script has several")
+    print("    features not found in most Python seutp.py scrips.")
+    print()
+    print("COMMANDS")
+    print("    build")
+    print("        Comples/builds mmLib C modules and preps Python")
+    print("        files for installation.")
+    print("    install")
+    print("        Installs all mmLib files into the Python library")
+    print("        directory.")
+    print("    checkdeps")
+    print("        Checks for all dependant Python modules used by")
+    print("        the mmLib library and associated applications.")
+    print("        This produces a nice report to help you figure out")
+    print("        what dependancies need to be installed.")
+    print("        See INSTALL.txt for more details.")
+    print("    doc")
+    print("        Build the mmLib developers documentation using the")
+    print("        Epidoc program.")
+    print("    buildlib")
+    print("        Download the RCSB monomer library from")
+    print("        http://pdb.rutgers.edu/public-component-erf.cif and")
+    print("        use it to build the mmLib monomer library in")
+    print("        mmLib/Data/Monomers")
 
 
 def main():
-    print
-    print "PYTHON MACROMOLECULAR LIBRARY -- SETUP PROGRAM"
-    print
+    print()
+    print("PYTHON MACROMOLECULAR LIBRARY -- SETUP PROGRAM")
+    print()
 
     opts = check_pymmlib_options()
 
@@ -546,11 +546,11 @@ def main():
         if DISTUTILS_FOUND is True:
             run_setup(opts)
         else:
-            print """\
+            print("""\
             ERROR: Python Distuils Not Found. You may have to install
             the python-devel package on some Linux distructions.  See
             INSTALL.txt for details.
-            """
+            """)
 
 if __name__ == "__main__":
     main()

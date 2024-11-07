@@ -16,7 +16,7 @@ from mmLib import FileIO
 
 
 def main(path):
-    print "PERFORMANCE PROFILE: mmLib.LoadStructure(fil=%s)" % (path)
+    print("PERFORMANCE PROFILE: mmLib.LoadStructure(fil=%s)" % (path))
     profile.run("FileIO.LoadStructure(fil=path)")
 
 if __name__ == "__main__":
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     try:
         path = sys.argv[1]
     except IndexError:
-        print "usage: profile_load.py <PDB/mmCIF file or directory of files>"
+        print("usage: profile_load.py <PDB/mmCIF file or directory of files>")
         sys.exit(1)
 
     if os.path.isfile(path):
@@ -38,5 +38,5 @@ if __name__ == "__main__":
             try:
                 main(name)
             except:
-                print "ERROR: ",name
+                print("ERROR: ",name)
                 raise

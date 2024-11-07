@@ -4,7 +4,7 @@
 ## included as part of this package.
 """Visualization system for Structure objects.
 """
-from __future__  import generators
+
 
 import copy
 import math
@@ -16,15 +16,15 @@ try:
     except ImportError:
         from numpy.linalg import old as linalg
 except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+    from . import NumericCompat as numpy
+    from .NumericCompat import linalg
 
-import Library
-import GeometryDict
-import AtomMath
-import Structure
-import Gaussian
-import Colors
+from . import Library
+from . import GeometryDict
+from . import AtomMath
+from . import Structure
+from . import Gaussian
+from . import Colors
 
 
 ## MISC Constents
@@ -38,6 +38,7 @@ class GLPropertyDict(dict):
     """Property cache/routing dictionary
     """
     def __init__(self, gl_object):
+        super().__init__()
         self.gl_object = gl_object
 
     def update(self, **args):
@@ -230,7 +231,7 @@ class GLObject(object):
         pl2.reverse()
 
         ancestor = None
-        for i in xrange(min(len(pl1), len(pl2))):
+        for i in range(min(len(pl1), len(pl2))):
             if pl1[i] == pl2[i]:
                 ancestor = pl1[i]
             else:
@@ -309,7 +310,7 @@ class GLObject(object):
         """
         prop_desc = self.glo_get_property_desc(name)
         if prop_desc is None:
-            raise ValueError, "GLObject.glo_link_child_property(x, y, z) parent has no property: %s" % (name)
+            raise ValueError("GLObject.glo_link_child_property(x, y, z) parent has no property: %s" % (name))
 
         link_dict = {"gl_object": child_gl_object_id,
                      "name":      child_name}
@@ -352,7 +353,7 @@ class GLObject(object):
             name = prop_desc["name"]
 
             ## set the property value
-            if args.has_key(name):
+            if name in args:
                 if isinstance(args[name], GLPropertyDefault):
                     self.properties[name] = prop_desc["default"]
                 else:
@@ -401,7 +402,7 @@ class GLObject(object):
             name = prop_desc["name"]
 
             ## continue if this property is not being updated
-            if args.has_key(name) is False:
+            if (name in args) is False:
                 continue
 
             ## update_on_set:
@@ -635,7 +636,7 @@ class GLDrawList(GLObject):
         try:
             colorx = self.properties[prop_name]
         except KeyError:
-            raise KeyError, "gldl_property_color_rgbf: bad prop_name %s" % (prop_name)
+            raise KeyError("gldl_property_color_rgbf: bad prop_name %s" % (prop_name))
         
         try:
             return Colors.COLOR_RGBF[colorx.lower()]
@@ -652,7 +653,7 @@ class GLDrawList(GLObject):
             except ValueError:
                 return (1.0, 0.0, 0.0)
 
-        raise TypeError, "gldl_property_color_rgbf: bad colorx %s" % (str(colorx))
+        raise TypeError("gldl_property_color_rgbf: bad colorx %s" % (str(colorx)))
 
     def gldl_install_draw_methods(self):
         """Override in children to install draw methods for a GLDrawList.
@@ -669,8 +670,8 @@ class GLDrawList(GLObject):
         private values:
            gl_draw_list_id: OpenGL Drawlist ID
         """
-        assert draw_method.has_key("name")
-        assert draw_method.has_key("func")
+        assert "name" in draw_method
+        assert "func" in draw_method
 
         draw_method["transparent"] = draw_method.get("transparent", False)
         draw_method["no_gl_compile"] = draw_method.get("no_gl_compile", False)
@@ -1067,24 +1068,24 @@ class GLUnitCell(GLDrawList):
 
         rf, gf, bf = self.gldl_property_color_rgbf("a_color")
         self.driver.glr_set_material_rgb(rf, gf, bf)
-        for k in xrange(z1, z2+2):
-            for j in xrange(y1, y2+2):
+        for k in range(z1, z2+2):
+            for j in range(y1, y2+2):
                 p1 = x1*a + j*b + k*c
                 p2 = (x2+1)*a + j*b + k*c
                 self.driver.glr_tube(p1, p2, rad)
 
         rf, gf, bf = self.gldl_property_color_rgbf("b_color")
         self.driver.glr_set_material_rgb(rf, gf, bf)
-        for k in xrange(z1, z2+2):
-            for i in xrange(x1, x2+2):
+        for k in range(z1, z2+2):
+            for i in range(x1, x2+2):
                 p1 = i*a + y1*b + k*c
                 p2 = i*a + (y2+1)*b + k*c
                 self.driver.glr_tube(p1, p2, rad)
 
         rf, gf, bf = self.gldl_property_color_rgbf("c_color")
         self.driver.glr_set_material_rgb(rf, gf, bf)
-        for j in xrange(y1, y2+2):
-            for i in xrange(x1, x2+2):
+        for j in range(y1, y2+2):
+            for i in range(x1, x2+2):
                 p1 = i*a + j*b + z1*c
                 p2 = i*a + j*b + (z2+1)*c
                 self.driver.glr_tube(p1, p2, rad)
@@ -1710,7 +1711,7 @@ class GLAtomList(GLDrawList):
         if self.glal_visible_atoms_dict is None:
             self.glal_rebuild_atom_dicts()
 
-        for atm, pos in self.glal_visible_atoms_dict.iteritems():
+        for atm, pos in self.glal_visible_atoms_dict.items():
             yield atm, pos
                     
     def glal_calc_position(self, position):
@@ -1777,7 +1778,7 @@ class GLAtomList(GLDrawList):
         elif setting=="Color By Anisotropy":
             return self.glal_calc_color_range(atom.calc_anisotropy())
 
-        raise ValueError, "glal_calc_color: bad color setting %s" % (str(setting))
+        raise ValueError("glal_calc_color: bad color setting %s" % (str(setting)))
 
     def glal_calc_color_label(self):
         """Returns the label color.
@@ -2027,7 +2028,7 @@ class GLAtomList(GLDrawList):
                     try:
                         pos2 = self.glal_visible_atoms_dict[atm2]
                     except KeyError:
-                        if self.glal_hidden_atoms_dict.has_key(atm2):
+                        if atm2 in self.glal_hidden_atoms_dict:
                             continue
                         else:
                             pos2 = self.glal_calc_position(atm2.position)
@@ -2065,7 +2066,7 @@ class GLAtomList(GLDrawList):
                 try:
                     pos2 = self.glal_visible_atoms_dict[atm2]
                 except KeyError:
-                    if self.glal_hidden_atoms_dict.has_key(atm2):
+                    if atm2 in self.glal_hidden_atoms_dict:
                         continue
                     else:
                         pos2 = self.glal_calc_position(atm2.position)
@@ -2499,11 +2500,11 @@ class GLViewer(GLObject):
         ## clipping plane
         slice = self.properties["near"] - self.properties["far"]
         if slice<1.0:
-            if updates.has_key("near") and updates.has_key("far"):
+            if "near" in updates and "far" in updates:
                 self.properties.update(far = self.properties["near"] - 1.0)
-            elif updates.has_key("near") and not updates.has_key("far"):
+            elif "near" in updates and "far" not in updates:
                 self.properties.update(near = self.properties["far"] + 1.0)
-            elif updates.has_key("far") and not updates.has_key("near"):
+            elif "far" in updates and "near" not in updates:
                 self.properties.update(far = self.properties["near"] - 1.0)
 
         ## redraw request
@@ -2788,7 +2789,7 @@ class GLViewer(GLObject):
         """Return the R,G,B triplit of the background color.
         """
         colorx = self.properties["bg_color"].lower()
-        if Colors.COLOR_RGBF.has_key(colorx):
+        if colorx in Colors.COLOR_RGBF:
             return Colors.COLOR_RGBF[colorx]
         
         try:

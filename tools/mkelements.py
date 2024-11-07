@@ -875,8 +875,8 @@ def new_doc():
     dx    = {}
     elist = []
 
-    for e in ElementMap.values():
-        if not dx.has_key(e.name):
+    for e in list(ElementMap.values()):
+        if e.name not in dx:
             dx[e.name] = True
             elist.append((e.atomic_number, e))
 

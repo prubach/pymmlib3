@@ -4,12 +4,12 @@
 ## included as part of this package.
 """Convert a Structure object to its PDBFile description.
 """
-import ConsoleOutput
-import Library
-import PDB
-import mmCIF
-import Structure
-import StructureBuilder
+from . import ConsoleOutput
+from . import Library
+from . import PDB
+from . import mmCIF
+from . import Structure
+from . import StructureBuilder
 
 
 ## class specification for alpha helices mapping mmLib classification
@@ -75,7 +75,7 @@ HELIX_CLASS_LIST = [
 def setmap(smap, skey, dmap, dkey):
     """Sets the dmap/dkey with the value from smap/skey/
     """
-    if smap.has_key(skey):
+    if skey in smap:
         dmap[dkey] = str(smap[skey])
         return True
     return False
@@ -84,11 +84,11 @@ def setmap(smap, skey, dmap, dkey):
 def setmaps(smap, skey, dmap, dkey):
     """Sets the dmap/dkey with the string value from smap/skey/
     """
-    if smap.has_key(skey):
+    if skey in smap:
         try:
             dmap[dkey] = str(smap[skey])
         except ValueError:
-            print "setmaps(): ValueError"
+            print("setmaps(): ValueError")
             return False
         return True
     return False
@@ -97,11 +97,11 @@ def setmaps(smap, skey, dmap, dkey):
 def setmapi(smap, skey, dmap, dkey):
     """Sets the dmap/dkey with the integer value from smap/skey.
     """
-    if smap.has_key(skey) and smap[skey]!="":
+    if skey in smap and smap[skey]!="":
         try:
             dmap[dkey] = int(smap[skey])
         except ValueError:
-            print "setmapi(): ValueError"
+            print("setmapi(): ValueError")
             return False
         return True
     return False
@@ -111,12 +111,12 @@ def setmapf(smap, skey, dmap, dkey):
     """Sets the dmap/dkey with the float value from smap/skey or default if 
     not smap/skey value is found.
     """
-    if smap.has_key(skey) and smap[skey]!="":
+    if skey in smap and smap[skey]!="":
         try:
             dmap[dkey] = float(smap[skey])
         except ValueError:
-            print "setmapf(): ValueError dmap[%s]=smap[%s]=%s" % (
-                dkey, skey, smap[skey])
+            print("setmapf(): ValueError dmap[%s]=smap[%s]=%s" % (
+                dkey, skey, smap[skey]))
             return False
         return True
     return False
@@ -131,9 +131,9 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
 
     def get_fragment_id(self, rec, res_seq = "resSeq", icode = "iCode"):
         fragment_id = None
-        if rec.has_key(res_seq):
+        if res_seq in rec:
             fragment_id = str(rec[res_seq])
-            if rec.has_key(icode):
+            if icode in rec:
                 fragment_id += rec[icode]
         return fragment_id
     
@@ -243,21 +243,21 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
                 atm_map["element"] = gelement
 
         ## additional atom information
-        if rec.has_key("serial"):
+        if "serial" in rec:
             atm_map["serial"] = rec["serial"]
 
-        if rec.has_key("altLoc"):
+        if "altLoc" in rec:
             atm_map["alt_loc"] = rec["altLoc"]
 
-        if rec.has_key("resName"):
+        if "resName" in rec:
             atm_map["res_name"] = rec["resName"]
 
-        if rec.has_key("chainID"):
+        if "chainID" in rec:
             atm_map["chain_id"] = rec["chainID"]
 
         ## construct fragment_id
-        if rec.has_key("resSeq"):
-            if rec.has_key("iCode"):
+        if "resSeq" in rec:
+            if "iCode" in rec:
                 atm_map["fragment_id"] = "%d%s" % (rec["resSeq"],rec["iCode"])
             else:
                 atm_map["fragment_id"] = "%d" % (rec["resSeq"])
@@ -267,20 +267,20 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             atm_map["model_id"] = self.model_num
 
         ## position
-        if rec.has_key("x"):
+        if "x" in rec:
             atm_map["x"] = rec["x"]
-        if rec.has_key("y"):
+        if "y" in rec:
             atm_map["y"] = rec["y"]
-        if rec.has_key("z"):
+        if "z" in rec:
             atm_map["z"] = rec["z"]
 
-        if rec.has_key("occupancy"):
+        if "occupancy" in rec:
             atm_map["occupancy"] = rec["occupancy"]
-        if rec.has_key("tempFactor"):
+        if "tempFactor" in rec:
             atm_map["temp_factor"] = rec["tempFactor"]
 
         ## columns 67 and 68. Can be used for anything.
-        if rec.has_key("column6768"):
+        if "column6768" in rec:
             atm_map["column6768"] = rec["column6768"]
 
     def process_HETATM(self, rec):
@@ -552,7 +552,7 @@ class PDBStructureBuilder(StructureBuilder.StructureBuilder,
             strand["frag_id2"] = frag_id2
 
         ## sense
-        if rec.has_key("sense"):
+        if "sense" in rec:
             if rec["sense"]==1:
                 strand["sense"] = "parallel"
             elif rec["sense"]==-1:
@@ -1254,23 +1254,23 @@ class PDBFileBuilder(object):
             atom_rec["charge"] = atm.charge
 
         def atom_common(arec1, arec2):
-            if arec1.has_key("serial"):
+            if "serial" in arec1:
                 arec2["serial"] = arec1["serial"]
-            if arec1.has_key("chainID"):
+            if "chainID" in arec1:
                 arec2["chainID"] = arec1["chainID"]
-            if arec1.has_key("resName"):
+            if "resName" in arec1:
                 arec2["resName"] = arec1["resName"]
-            if arec1.has_key("resSeq"):
+            if "resSeq" in arec1:
                 arec2["resSeq"] = arec1["resSeq"]
-            if arec1.has_key("iCode"):
+            if "iCode" in arec1:
                 arec2["iCode"] = arec1["iCode"]
-            if arec1.has_key("name"):
+            if "name" in arec1:
                 arec2["name"] = arec1["name"]
-            if arec1.has_key("altLoc"):
+            if "altLoc" in arec1:
                 arec2["altLoc"] = arec1["altLoc"]
-            if arec1.has_key("element"):
+            if "element" in arec1:
                 arec2["element"] = arec1["element"]
-            if arec1.has_key("charge"):
+            if "charge" in arec1:
                 arec2["charge"] = arec1["charge"]
 
         if atm.sig_position is not None:

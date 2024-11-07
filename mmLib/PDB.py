@@ -7,9 +7,6 @@ specification have corresponding classes defined here. PDB files are
 loaded into a list of these cassed, and also can be constrcted/modified
 and written back out as PDB files.
 """
-from __future__ import generators
-import fpformat
-
 
 class PDBError(Exception):
     """
@@ -47,7 +44,7 @@ class PDBRecord(dict):
             try:
                 assert len(ln) <= (start - 1)
             except AssertionError:
-                print "[ASSERT] "+ln
+                print("[ASSERT] "+ln)
                 raise
 
             ## add spaces to the end if necessary
@@ -80,7 +77,7 @@ class PDBRecord(dict):
 
             elif ftype.startswith("float"):
                 try:
-                    s = fpformat.fix(s, int(ftype[6]))
+                    s = "%0.{}f".format(int(ftype[6])) % (s)
                 except ValueError:
                     raise PDBValueError("field=%s %s not float" % (field, s))
 
@@ -88,8 +85,8 @@ class PDBRecord(dict):
             try:
                 assert isinstance(s, str)
             except AssertionError:
-                print "### s",str(type(s)), str(s), ftype, field
-                print ln
+                print("### s",str(type(s)), str(s), ftype, field)
+                print(ln)
                 raise
 
             ## check for maximum length
@@ -235,7 +232,7 @@ class PDBRecord(dict):
                     (dest, srcs) = trans
 
                     for sx in srcs:
-                        if dictx.has_key(dest):
+                        if dest in dictx:
                             try:
                                 dictx[dest].append(rec[sx])
                             except KeyError:
@@ -365,7 +362,7 @@ class CAVEAT(PDBRecord):
             ## add comment
             comment = rec.get("comment")
             if comment is not None:
-                if cav.has_key("comment"):
+                if "comment" in cav:
                     cav["comment"] += comment
                 else:
                     cav["comment"] = comment
@@ -1600,7 +1597,7 @@ class RecordProcessor(object):
         ##       files
 
         ## check for "continuation" field continuous records
-        if prev_rec.has_key("continuation") or rec.has_key("continuation"):
+        if "continuation" in prev_rec or "continuation" in rec:
             prev_continuation = prev_rec.get("continuation", 1)
             continuation = rec.get("continuation", 1)
 
@@ -1610,7 +1607,7 @@ class RecordProcessor(object):
                 return False
 
         ## check for "serNum" continuations
-        if prev_rec.has_key("serNum") or rec.has_key("serNum"):
+        if "serNum" in prev_rec or "serNum" in rec:
             prev_serial = prev_rec.get("serNum", 0)
             serial = rec.get("serNum", 0)
 
@@ -1716,7 +1713,7 @@ def test_module():
     try:
         path = sys.argv[1]
     except IndexError:
-        print "usage: PDB.py <PDB file path>"
+        print("usage: PDB.py <PDB file path>")
         raise SystemExit
     pdbfil = PDBFile()
     pdbfil.load_file(path)

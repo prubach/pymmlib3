@@ -15,10 +15,10 @@ AMINO_ACID13_DICT = {
 
 
 def usage():
-    print "seq2seqres.py: convert a 1-letter protein sequence into"
-    print "               PDB file SEQRES records"
-    print "usage: seq2seqres.py <chain_id> <1-leter-code sequence>"
-    print
+    print("seq2seqres.py: convert a 1-letter protein sequence into")
+    print("               PDB file SEQRES records")
+    print("usage: seq2seqres.py <chain_id> <1-leter-code sequence>")
+    print()
     sys.exit(-1)
 
 
@@ -39,7 +39,7 @@ def main(chain_id, sequence):
 
     for i in range(len(sequence3)):
         res = sequence3[i]        
-        if AMINO_ACID13_DICT.has_key(res):
+        if res in AMINO_ACID13_DICT:
             sequence3[i] = AMINO_ACID13_DICT[res]
 
     ## generate PDB records

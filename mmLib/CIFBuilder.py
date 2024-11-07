@@ -2,10 +2,10 @@
 ## This code is part of the PyMMLib distribution and governed by
 ## its license.  Please see the LICENSE file that should have been
 ## included as part of this package.
-import CIF
-import Structure
-import StructureBuilder
-from ConsoleOutput import warning
+from . import CIF
+from . import Structure
+from . import StructureBuilder
+from .ConsoleOutput import warning
 
 def add_string(m, key, table, column, row):
     try:
@@ -116,11 +116,10 @@ class CIFStructureBuilder(StructureBuilder.StructureBuilder):
             add_number(atm_map, "temp_factor",
                                         table, "atom_site_U_iso_or_equiv", i)
             add_number(atm_map, "occupancy", table, "atom_site_occupancy", i)
-            try:
-                fx = atm_map["fractx"] 
-                fy = atm_map["fracty"] 
-                fz = atm_map["fractz"] 
-            except KeyError:
+            fx = atm_map["fractx"]
+            fy = atm_map["fracty"]
+            fz = atm_map["fractz"]
+            if not fx or not fy or not fz:
                 warning("read_atoms: missing coordinates")
             else:
                 fc = [ fx, fy, fz ]
@@ -157,16 +156,16 @@ class CIFStructureBuilder(StructureBuilder.StructureBuilder):
 
         for row in range(len(table.rows)):
             name1 = table.get_value("geom_bond_atom_site_label_1", row)
-            try:
+            if name1 in self.atom_site_name_map.keys():
                 atom1 = self.atom_site_name_map[name1]
-            except KeyError:
+            else:
                 warning("read_atoms: bond references non-existent atom '%s'"
                         % name1)
                 continue
             name2 = table.get_value("geom_bond_atom_site_label_2", row)
-            try:
+            if name2 in self.atom_site_name_map.keys():
                 atom2 = self.atom_site_name_map[name2]
-            except KeyError:
+            else:
                 warning("read_atoms: bond references non-existent atom '%s'"
                         % name2)
                 continue
@@ -221,11 +220,8 @@ class CIFStructureBuilder(StructureBuilder.StructureBuilder):
             "chemical_name_systematic",
         ]
         for tag in name_tags:
-            try:
+            if tag in self.cif.tags.keys():
                 entry_id = self.cif.tags[tag].strip()
-            except KeyError:
-                pass
-            else:
                 if entry_id != '.' and entry_id != '?':
                     self.load_structure_id(entry_id)
                     break
@@ -234,5 +230,5 @@ if __name__ == "__main__":
     def builder_test(test_file):
         csb = CIFStructureBuilder(fil=test_file)
         s = csb.struct
-        print s
+        print(s)
     builder_test("ccd.cif")

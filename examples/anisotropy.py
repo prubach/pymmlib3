@@ -13,7 +13,7 @@ from mmLib import FileIO
 
 def main(path):
     ## load structure
-    print "Loading ",path
+    print("Loading ",path)
     struct = FileIO.LoadStructure(file = path)
 
     ## list of anisotropic values
@@ -37,14 +37,14 @@ def main(path):
     amax = bin_size
     while amax <= 1.001:
         amin = amax - bin_size
-        print "Ansotropy Range (%f,%f): %d atoms " % (
-            amin, amax, count(amin, amax))
+        print("Ansotropy Range (%f,%f): %d atoms " % (
+            amin, amax, count(amin, amax)))
         amax += bin_size
 
 
 try:
     path = sys.argv[1]
 except IndexError:
-    print "usage: ansotropy.py <PDB/mmCIF file>"
+    print("usage: ansotropy.py <PDB/mmCIF file>")
 else:
     main(path)

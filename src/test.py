@@ -7,7 +7,7 @@
 faster than the Python implementation.
 """
 
-from __future__ import generators
+
 
 import sys
 import os
@@ -16,7 +16,6 @@ import types
 import re
 import shelve
 import pdbmodule
-from Numeric import *
 from LinearAlgebra import *
 
 aniso_bin_width = 0.025
@@ -77,7 +76,7 @@ def inc_aniso_dict(aniso_dict, aniso):
 
 def prnt_aniso_dict(aniso_dict):
     for bin in range(1, aniso_bins+1):
-        print "%d: %d" % (bin, aniso_dict[bin])
+        print("%d: %d" % (bin, aniso_dict[bin]))
 
 def set_aniso_dict(rec, aniso_dict):
     assert rec["RECORD"] == "ANISOU"
@@ -123,7 +122,7 @@ def read_pdb(path):
 
         if rec_type == "ATOM  " or rec_type == "HETATM":
 
-            if res_dict.has_key(rec.get("resName", "")):
+            if rec.get("resName", "") in res_dict:
                 try:
                     stats["atoms"] += 1
                 except KeyError:
@@ -158,7 +157,7 @@ def read_pdb(path):
             except KeyError:
                 stats["anisou"] = 1
 
-            if res_dict.has_key(rec.get("resName", "")):
+            if rec.get("resName", "") in res_dict:
                 Usum = rec["u[0][0]"]+rec["u[1][1]"]+rec["u[2][2]"]
                 Uadv_prot += float(Usum)/30000.0
                 Unum_prot += 1
@@ -220,14 +219,14 @@ def read_pdb(path):
     return stats
 
 def prnt_stats(stats):
-    for (key, val) in stats.items():
+    for (key, val) in list(stats.items()):
 
-        if type(val) == types.FloatType:
+        if type(val) == float:
             val = "%.2f" % (val)
         else:
             val = str(val)
 
-        print "%s: %s" % (key.rjust(15), val)
+        print("%s: %s" % (key.rjust(15), val))
 
 if __name__ == "__main__":
     try:
@@ -240,10 +239,10 @@ if __name__ == "__main__":
         i += 1
         stats = read_pdb(pathx)
 
-        print
+        print()
         prnt_stats(stats)
 
-        if stats.has_key("Aadv_prot") and stats.has_key("id"):
+        if "Aadv_prot" in stats and "id" in stats:
             db = shelve.open("anisodb.dat")
             db[stats["id"]] = stats
             db.close()

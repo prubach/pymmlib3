@@ -5,10 +5,10 @@
 """Classes for building a mmLib.Structure representation of biological
 macromolecules.
 """
-import ConsoleOutput
-import Library
-import Structure
-import UnitCell
+from . import ConsoleOutput
+from . import Library
+from . import Structure
+from . import UnitCell
 
 
 class StructureBuilderError(Exception):
@@ -36,15 +36,15 @@ class StructureBuilder(object):
 
         ## allocate a new Structure object for building if one was not
         ## passed to the StructureBuilder
-        if args.has_key("structure"):
+        if "structure" in args:
             self.struct = args["structure"]
-        elif args.has_key("struct"):
+        elif "struct" in args:
             self.struct = args["struct"]
         else:
             self.struct = Structure.Structure()
 
         ## set structure_id
-        if args.has_key("structure_id"):
+        if "structure_id" in args:
             self.struct.structure_id = args["structure_id"]
 
         ## options
@@ -119,7 +119,7 @@ class StructureBuilder(object):
             ConsoleOutput.warning("FragmentOverwrite: %s" % (atm))
             self.name_service_list.append(atm)
 
-        except Structure.AtomOverwrite, err:
+        except Structure.AtomOverwrite as err:
             ConsoleOutput.warning("AtomOverwrite: %s" % (err))
             self.name_service_list.append(atm)
 
@@ -233,7 +233,7 @@ class StructureBuilder(object):
             ## fragment are: it has it have the same res_name, and its
             ## atom name cannot conflict with the names of atoms already in
             ## in the fragment
-            if atm.res_name != current_polymer_res_name or current_polymer_name_dict.has_key(atm.name):
+            if atm.res_name != current_polymer_res_name or atm.name in current_polymer_name_dict:
                 current_polymer_res_name  = atm.res_name
                 current_polymer_name_dict = {atm.name: True}
 
@@ -251,15 +251,15 @@ class StructureBuilder(object):
             self.name_service_list.remove(atm)
 
         ## now assign chain_ids and add the atoms to the structure
-        model_ids = polymer_model_dict.keys()
+        model_ids = list(polymer_model_dict.keys())
         model_ids.sort()
         model_list = [polymer_model_dict[model_id] for model_id in model_ids]
 
         num_chains = 0
-        for frag_list in polymer_model_dict.itervalues():
+        for frag_list in polymer_model_dict.values():
             num_chains = max(num_chains, len(frag_list))
 
-        for chain_index in xrange(num_chains):
+        for chain_index in range(num_chains):
             ## get next available chain_id
             chain_id = next_chain_id("")
 
@@ -303,7 +303,7 @@ class StructureBuilder(object):
             ## if the atom fragment id matches the current fragment id
             ## and doesn't conflict with any other atom name in the fragment
             ## then add it to the fragment
-            if atm_frag_id==frag_id and not name_dict.has_key(atm_id):
+            if atm_frag_id==frag_id and atm_id not in name_dict:
                 frag.append(atm)
                 name_dict[atm_id] = True
 
@@ -370,7 +370,7 @@ class StructureBuilder(object):
             ## and have a 1:1 correspondence; if not, match up the
             ## fragments as much as possible
             max_frags = -1
-            for (model, frag_list) in model_dict.iteritems():
+            for (model, frag_list) in model_dict.items():
                 frag_list_len = len(frag_list)
 
                 if max_frags == -1:
@@ -385,10 +385,10 @@ class StructureBuilder(object):
 
             ## now iterate through the fragment lists in parallel and assign
             ## the new chain_id and fragment_id
-            for i in xrange(max_frags):
+            for i in range(max_frags):
                 fragment_id_num += 1
 
-                for frag_list in model_dict.itervalues():
+                for frag_list in model_dict.values():
                     try:
                         frag = frag_list[i]
                     except IndexError:
@@ -435,11 +435,11 @@ class StructureBuilder(object):
         parameters for the structure.
         """
         for key in ("a", "b", "c", "alpha", "beta", "gamma"):
-            if not ucell_map.has_key(key):
+            if key not in ucell_map:
                 ConsoleOutput.debug("ucell_map missing: %s" % (key))
                 return
 
-        if ucell_map.has_key("space_group"):
+        if "space_group" in ucell_map:
             self.struct.unit_cell = UnitCell.UnitCell(
                 a = ucell_map["a"],
                 b = ucell_map["b"],
@@ -480,7 +480,7 @@ class StructureBuilder(object):
         """
 
         ### TODO: Fix this to build bonds in all models! 2010-09-22
-        for ((atm1, atm2), bd_map) in bond_map.iteritems():
+        for ((atm1, atm2), bd_map) in bond_map.items():
 
             ## check for files which, for some reason, define have a bond
             ## entry bonding the atom to itself

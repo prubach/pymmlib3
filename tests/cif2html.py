@@ -7,7 +7,6 @@
 ## Python
 import os
 import sys
-import popen2
 import gc
 
 ## pymmlib
@@ -78,9 +77,9 @@ def cif2html(cif_path, html_path):
     fileobj = FileIO.OpenFile(cif_path, "r")
 
     cif_file = mmCIF.mmCIFFile()
-    print "loading..."
+    print("loading...")
     cif_file.load_file(fileobj)
-    print "converting..."
+    print("converting...")
     cif_data = cif_file[0]
 
     c2h_template = kid.Template(file = "cif2html.kid")
@@ -112,11 +111,11 @@ def main():
 
         if os.path.isfile(cif_path):
             if not os.path.isfile(html_path):
-                print "%s -> %s" % (cif_path, html_path)
+                print("%s -> %s" % (cif_path, html_path))
                 cif2html(cif_path, html_path)
                 gc.collect()
             else:
-                print "*%s -> %s" % (cif_path, html_path)
+                print("*%s -> %s" % (cif_path, html_path))
 
 
 if __name__ == "__main__":

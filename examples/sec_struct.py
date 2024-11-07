@@ -11,7 +11,7 @@ import string
 from mmLib import FileIO
 
 def usage():
-    print """
+    print("""
     NAME
        sec_struct.py - print out secondary structure
 
@@ -19,38 +19,38 @@ def usage():
        sec_struct.py <file>
        sec_struct.py -v <file> (verbose output
 
-    """
+    """)
     
 
 def main(path, verbose):
     
     struct = FileIO.LoadStructure(file = path)
-    print struct
+    print(struct)
 
-    print "Alpha Helicies:"
+    print("Alpha Helicies:")
     for ahelix in struct.iter_alpha_helicies():
-        print "    ",ahelix
+        print("    ",ahelix)
 
         if verbose == True:
-            print "        ",ahelix.segment
+            print("        ",ahelix.segment)
 
-    print "Beta Sheets:"
+    print("Beta Sheets:")
     for bsheet in struct.iter_beta_sheets():
 
-        print "    ",bsheet
+        print("    ",bsheet)
 
         if verbose == True:
             for strand in bsheet.iter_strands():
-                print "        ",strand
-                print "            ",strand.segment
+                print("        ",strand)
+                print("            ",strand.segment)
 
-    print "Sites:"
+    print("Sites:")
     for site in struct.iter_sites():
-        print "    ",site
+        print("    ",site)
 
         if verbose == True:
             for frag in site.iter_fragments():
-                print "        ",frag
+                print("        ",frag)
 
 
 if __name__ == '__main__':

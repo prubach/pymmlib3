@@ -17,7 +17,7 @@
 ##   - 2009-12-05: Ready for distribution
 ##   - 2009-10-30: Started script
 
-from __future__ import generators
+
 import sys
 import os
 import time
@@ -211,7 +211,7 @@ def read_pdb(path):
                     listx.append("#ORIGIN   %8.4f %8.4f %8.4f" % (
                         ox[0], ox[1], ox[2]))
                 except:
-                    print "ERROR!"
+                    print("ERROR!")
                     pass
 
             ## Capture the actual TLS values/fields.
@@ -288,8 +288,8 @@ def read_pdb(path):
             try:
                 Usum = rec["u[0][0]"] + rec["u[1][1]"] + rec["u[2][2]"]
             except KeyError:
-                print "# STRANGE Uij VALUE(S) FOR ATOM=%s; RESIDUE=%s:%s:%s" % (
-                    rec["serial"], rec["chainID"], rec["resName"], rec["resSeq"])
+                print("# STRANGE Uij VALUE(S) FOR ATOM=%s; RESIDUE=%s:%s:%s" % (
+                    rec["serial"], rec["chainID"], rec["resName"], rec["resSeq"]))
                 continue
 
             try:
@@ -340,7 +340,7 @@ def get_chain_type(res_name):
         return 1
     else:
         ## Unknown residue type
-        print "# UNKOWN RESIDUE!"
+        print("# UNKOWN RESIDUE!")
         return 9
 
 def get_res_frac(chain_type, atm_name, res_name):
@@ -369,12 +369,12 @@ if __name__ == "__main__":
     for pathx in my_walk(path):
         i += 1
         listx, overall, atom_obj = read_pdb(pathx)
-        print "# %s" % listx
+        print("# %s" % listx)
 
         chain_type = get_chain_type(atom_obj[0]["resName"])
 
         ## This is the header of the output
-        print "#bond_num, bond, tls_group, cc_UV, Suij, Rosenfeld, diff_trace_UV, sum_square_diff"
+        print("#bond_num, bond, tls_group, cc_UV, Suij, Rosenfeld, diff_trace_UV, sum_square_diff")
 
         for u in range(1, len(atom_obj)):
             ## Example record/dictionary
@@ -405,13 +405,13 @@ if __name__ == "__main__":
             d = math.sqrt( (x1-x2)**2 + (y1-y2)**2 + (x1-x2)**2 )
             #d = AtomMath.calc_distance(atom_obj[u-1], atom_obj[u])
             if ( (d > 2.0) and (cid1 == cid2) ):
-                print "# BOND BREAK!"
+                print("# BOND BREAK!")
                 continue
 
             ## Add newlines for new chain_id
             if cid1 != cid2:
                 chain_type = get_chain_type(res_name2)
-                print "\n"
+                print("\n")
                 continue
 
             ## Assign a "bond-number" to the two given atoms
@@ -420,7 +420,7 @@ if __name__ == "__main__":
                 bond_pos = "%s.%s" % (
                     res_num1, get_res_frac(chain_type, atm_name1, res_name2))
             except:
-                print "# POSSIBLE LIGAND FOUND!"
+                print("# POSSIBLE LIGAND FOUND!")
                 continue
 
             ## Ready the data for Fortran77-style arrays
@@ -453,7 +453,7 @@ if __name__ == "__main__":
             diff_trace_UV = tlsvld.diff_trace_uv(U, V)
 
             ## The actual output of this entire script.
-            print "%s\t%s:%s-%s:%s\t%s\t%.10f\t%.10f\t%.10f\t%.10f\t%.10f" % (
+            print("%s\t%s:%s-%s:%s\t%s\t%.10f\t%.10f\t%.10f\t%.10f\t%.10f" % (
                 bond_pos, cid1, res_name1, res_num1, bond, tls_group,
                 cc_UV, Suij, rosenfeld/10000,
-                diff_trace_UV/10000, sum_square_diff/10000**2)
+                diff_trace_UV/10000, sum_square_diff/10000**2))

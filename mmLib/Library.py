@@ -9,8 +9,8 @@ import os
 import sys
 import types
 
-import ConsoleOutput
-import mmCIF
+from . import ConsoleOutput
+from . import mmCIF
 
 
 ###############################################################################
@@ -288,10 +288,8 @@ def library_get_element_desc(symbol):
     """
     assert isinstance(symbol, str)
 
-    try:
+    if symbol in ELEMENT_CACHE.keys():
         return ELEMENT_CACHE[symbol]
-    except KeyError:
-        pass
 
     element_desc = library_construct_element_desc(symbol)
     if element_desc is None:
@@ -332,7 +330,7 @@ def library_open_monomer_lib_zipfile(monomer_name):
         except KeyError:
             ConsoleOutput.warning("monomer description not found in zipfile for '%s'" % (monomer_name))
         else:
-            from cStringIO import StringIO
+            from io import StringIO
             return StringIO(blob)
     return None
 
@@ -371,7 +369,7 @@ def library_construct_monomer_desc(res_name):
     if len(res_name) < 1:
         return None
 
-    if ALT_RES_NAME_DICT.has_key(res_name):
+    if res_name in ALT_RES_NAME_DICT:
         lookup_name = ALT_RES_NAME_DICT[res_name]
     else:
         lookup_name = res_name.upper()
@@ -465,10 +463,8 @@ def library_get_monomer_desc(res_name):
     """
     assert isinstance(res_name, str)
 
-    try:
+    if res_name in MONOMER_RES_NAME_CACHE.keys():
         return MONOMER_RES_NAME_CACHE[res_name]
-    except KeyError:
-        pass
 
     mon_desc = library_construct_monomer_desc(res_name)
     if mon_desc is None:
@@ -540,7 +536,7 @@ def library_guess_element_from_name(name0, res_name):
         ## try the easy way out -- look up the atom in the monomer dictionary
         mdesc = library_get_monomer_desc(res_name)
         if mdesc is not None:
-            if mdesc.atom_dict.has_key(name):
+            if name in mdesc.atom_dict:
                 symbol = mdesc.atom_dict[name]
                 if symbol is not None:
                     return symbol
@@ -575,11 +571,11 @@ def library_guess_element_from_name(name0, res_name):
         return None
 
     e1_symbol = alpha_name[0]
-    e1_valid  = ELEMENT_SYMBOL_DICT.has_key(e1_symbol)
+    e1_valid  = e1_symbol in ELEMENT_SYMBOL_DICT
 
     if len(alpha_name) > 1:
         e2_symbol = alpha_name[:2]
-        e2_valid  = ELEMENT_SYMBOL_DICT.has_key(e2_symbol)
+        e2_valid  = e2_symbol in ELEMENT_SYMBOL_DICT
     else:
         e2_symbol = None
         e2_valid  = False
@@ -613,11 +609,11 @@ def test_module():
 
     for cif_data in ELEMENT_CIF_FILE:
         if len(cif_data.name) == 1:
-            print '    "%s" : True, "%s" : True,' % (
-                cif_data.name, cif_data.name.lower())
+            print('    "%s" : True, "%s" : True,' % (
+                cif_data.name, cif_data.name.lower()))
         else:
-            print '    "%s": True, "%s": True, "%s": True,' % (
-                cif_data.name, cif_data.name.lower(), cif_data.name.upper())
+            print('    "%s": True, "%s": True, "%s": True,' % (
+                cif_data.name, cif_data.name.lower(), cif_data.name.upper()))
 
 if __name__ == "__main__":
     test_module()

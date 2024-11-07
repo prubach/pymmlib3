@@ -8,10 +8,10 @@
 import copy
 
 ## pymmlib
-import ConsoleOutput
-import mmCIF
-import StructureBuilder
-import Structure
+from . import ConsoleOutput
+from . import mmCIF
+from . import StructureBuilder
+from . import Structure
 
 
 def setmaps_cif(smap, skey, dmap, dkey):
@@ -191,11 +191,8 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
                         atm_map,   "model_id")
 
             if aniso_table is not None:
-                try:
+                if atom_site_id in aniso_dict.keys():
                     aniso = aniso_dict[atom_site_id]
-                except KeyError:
-                    ConsoleOutput.warning("unable to find aniso row for atom")
-                else:
                     setmapf_cif(aniso, "u[1][1]", atm_map, "u11")
                     setmapf_cif(aniso, "u[2][2]", atm_map, "u22")
                     setmapf_cif(aniso, "u[3][3]", atm_map, "u33")
@@ -209,6 +206,8 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
                     setmapf_cif(aniso, "u[1][2]_esd", atm_map, "sig_u12")
                     setmapf_cif(aniso, "u[1][3]_esd", atm_map, "sig_u13")
                     setmapf_cif(aniso, "u[2][3]_esd", atm_map, "sig_u23")
+                else:
+                    ConsoleOutput.warning("unable to find aniso row for atom")
 
             atm = self.load_atom(atm_map)
             self.atom_site_id_map[atom_site_id] = atm
@@ -222,7 +221,7 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
                        "atom_sites_alt"]
         
         for table in self.cif_data:
-            print "DEBUG: %s" % table
+            print("DEBUG: %s" % table)
             if table.name not in skip_tables:
                 self.struct.cifdb.add_table(table)
 
@@ -241,11 +240,12 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
     def read_structure_id(self):
         """Read the PDB ID.
         """
+        entry_id = None
         try:
             entry_id = self.cif_data["entry"]["id"]
         except KeyError:
             pass
-        else:
+        if entry_id:
             self.load_structure_id(entry_id)
 
     def read_unit_cell(self):
@@ -258,6 +258,9 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
             cell_table = self.cif_data["cell"]
             symmetry_table = self.cif_data["symmetry"]
         except KeyError:
+            return
+
+        if not entry_id or not cell_table or not symmetry_table:
             return
 
         cell = cell_table.get_row1("entry_id", entry_id)
@@ -503,7 +506,7 @@ class mmCIFFileBuilder(object):
 
     def get_entity_desc_from_sequence(self, sequence):
         for entity_desc in self.entity_list:
-            if entity_desc.has_key("sequence") and entity_desc["sequence"] == sequence:
+            if "sequence" in entity_desc and entity_desc["sequence"] == sequence:
                 return entity_desc
         return None
 
@@ -590,11 +593,11 @@ class mmCIFFileBuilder(object):
 
                 ## any fragments already assigned to a entity by the
                 ## polymer section above should be skipped
-                if self.entity_frag_dict.has_key(frag):
+                if frag in self.entity_frag_dict:
                     continue
 
                 ## already assigned a entity_id for this fragment_id
-                if self.entity_res_name_dict.has_key(frag.res_name):
+                if frag.res_name in self.entity_res_name_dict:
                     self.entity_frag_dict[frag] = self.entity_res_name_dict[frag.res_name]
                     continue
                     

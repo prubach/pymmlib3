@@ -11,12 +11,12 @@ import numpy
 from mmLib import Constants, Structure, FileIO, TLS
 
 def usage():
-    print "tlsb2aniso.py <tlsin> <struct-in> <struct-out>"
-    print
-    print "description:"
-    print "    Adds the TLS model ADPs to the struct-in ADPs and"
-    print "    writes the result to struct-out."
-    print
+    print("tlsb2aniso.py <tlsin> <struct-in> <struct-out>")
+    print()
+    print("description:")
+    print("    Adds the TLS model ADPs to the struct-in ADPs and")
+    print("    writes the result to struct-out.")
+    print()
 
 def main(tlsin, struct_in, struct_out):
     struct = FileIO.LoadStructure(file = struct_in)
@@ -32,7 +32,7 @@ def main(tlsin, struct_in, struct_out):
         tls = tls_desc.construct_tls_group_with_atoms(struct)
         tls.tls_desc = tls_desc
         tls_group_list.append(tls)
-        print tls.origin
+        print(tls.origin)
 
     for tls in tls_group_list:
         for atm, Utls in tls.iter_atm_Utls():

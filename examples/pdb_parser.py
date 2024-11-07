@@ -26,25 +26,25 @@ class MyPDBProcessor(PDB.RecordProcessor):
         pass
     
     def process_HEADER(self, pdb_record):
-        print "[REC HEADER]", pdb_record
+        print("[REC HEADER]", pdb_record)
     
     def preprocess_COMPND(self, pdb_record):
-        print "[REC COMPND]", pdb_record
+        print("[REC COMPND]", pdb_record)
 
     def preprocess_OBSLTE(self, pdb_record):
-        print "[REC OBSLTE]", pdb_record
+        print("[REC OBSLTE]", pdb_record)
         
     def preprocess_REVDAT(self, pdb_record):
-        print "[REC REVDAT]", pdb_record
+        print("[REC REVDAT]", pdb_record)
 
     def preprocess_SPRSDE(self, pdb_record):
-        print "[REC SPRSDE]", pdb_record
+        print("[REC SPRSDE]", pdb_record)
 
     def process_default(self, pdb_record):
         """This method will be called, if it exists, for any PDB handler
         without its own method handler.
         """
-        print "[DEFAULT]", pdb_record
+        print("[DEFAULT]", pdb_record)
 
 
 def main(path):
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     try:
         path = sys.argv[1]
     except IndexError:
-        print "usage: pdb_test.py <PDB file or directory of PDB files>"
+        print("usage: pdb_test.py <PDB file or directory of PDB files>")
         sys.exit(1)
 
     if os.path.isfile(path):
@@ -73,5 +73,5 @@ if __name__ == "__main__":
             try:
                 main(name)
             except:
-                print "ERROR: ",name
+                print("ERROR: ",name)
                 raise

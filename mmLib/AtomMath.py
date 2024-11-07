@@ -5,18 +5,10 @@
 """Mathematical operations performed on mmLib.Strcuture.Atom objects.
 """
 import math
+import numpy
+from numpy.linalg import linalg
 
-try:
-    import numpy
-    try:
-        from numpy.oldnumeric import linear_algebra as linalg
-    except ImportError:
-        from numpy.linalg import old as linalg        
-except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
-
-import Constants
+from . import Constants
 
 
 ##
@@ -121,8 +113,8 @@ def rmatrixu(u, theta):
     try:
         assert numpy.allclose(linalg.determinant(R), 1.0)
     except AssertionError:
-        print "rmatrixu(%s, %f) determinant(R)=%f" % (
-            u, theta, linalg.determinant(R))
+        print("rmatrixu(%s, %f) determinant(R)=%f" % (
+            u, theta, linalg.determinant(R)))
         raise
     
     return R
@@ -165,7 +157,7 @@ def rmatrixz(vec):
     try:
         assert numpy.allclose(linalg.determinant(R), 1.0)
     except AssertionError:
-        print "rmatrixz(%s) determinant(R)=%f" % (vec, linalg.determinant(R))
+        print("rmatrixz(%s) determinant(R)=%f" % (vec, linalg.determinant(R)))
         raise
 
     return R
@@ -566,7 +558,7 @@ def calc_inertia_tensor(atom_iter, origin):
 
 ### <TESTING>
 def test_module():
-    import Structure
+    from . import Structure
 
     a1 = Structure.Atom(x=0.0, y=-1.0, z=0.0)
     a2 = Structure.Atom(x=0.0, y=0.0,  z=0.0)
@@ -597,18 +589,18 @@ def test_module():
     a2 = Structure.Atom(x=54.810, y=57.974, z=13.593, res_name='ILE')
     a3 = Structure.Atom(x=55.221, y=58.358, z=12.242, res_name='ILE')
     a4 = Structure.Atom(x=54.461, y=59.575, z=11.722, res_name='ILE')
-    print "PHI: %.3f" % calc_torsion_angle(a1, a2, a3, a4)
+    print("PHI: %.3f" % calc_torsion_angle(a1, a2, a3, a4))
     # PSI: N-CA-C'-N
     a1 = Structure.Atom(x=54.810, y=57.974, z=13.593, res_name='ILE')
     a2 = Structure.Atom(x=55.221, y=58.358, z=12.242, res_name='ILE')
     a3 = Structure.Atom(x=54.461, y=59.575, z=11.722, res_name='ILE')
     a4 = Structure.Atom(x=54.985, y=60.748, z=12.087, res_name='SER')
-    print "PSI: %.3f" % calc_torsion_angle(a1, a2, a3, a4)
-    print "="*40
+    print("PSI: %.3f" % calc_torsion_angle(a1, a2, a3, a4))
+    print("="*40)
 
-    print "a1:", a1.position
-    print "calc_angle:", calc_angle(a1, a2, a3)
-    print "calc_torsion_angle:", calc_torsion_angle(a1, a2, a3, a4)
+    print("a1:", a1.position)
+    print("calc_angle:", calc_angle(a1, a2, a3))
+    print("calc_torsion_angle:", calc_torsion_angle(a1, a2, a3, a4))
 
 if __name__ == "__main__":
     test_module()

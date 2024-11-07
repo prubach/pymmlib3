@@ -5,7 +5,7 @@
 ##
 ## DESCRIPTION: CIF Parser for CIF 1.1 format
 
-from mmCIF import mmCIFSyntaxError
+from .mmCIF import mmCIFSyntaxError
 class CIFSyntaxError(mmCIFSyntaxError):
     pass
 
@@ -33,7 +33,7 @@ class CIFFile:
 
     def load_file(self, f):
         import types
-        if isinstance(f, types.StringTypes):
+        if isinstance(f, (str,)):
             name = f
             f = open(f)
             needClose = True
@@ -322,7 +322,7 @@ def formatMessage(filename, line, msg):
     return "%s(%d): %s" % (filename, line, msg)
 
 def makeNumber(s):
-    print "%s\n" % s ## DEBUG
+    print("%s\n" % s) ## DEBUG
 
     paren = s.find('(')         # ) for balance in vim
     if paren != -1:
@@ -344,19 +344,19 @@ if __name__ == "__main__":
             token = lexer.next_token()
             if token.type is L_EOF:
                 break
-            print formatMessage(test_file, token.line,
-                "%s: %s" % (token.type, token.value))
+            print(formatMessage(test_file, token.line,
+                "%s: %s" % (token.type, token.value)))
 
         f.close()
 
     def parser_test(test_file):
         cif = CIFFile()
         cif.load_file(test_file)
-        print "%d data blocks" % len(cif.data_blocks)
+        print("%d data blocks" % len(cif.data_blocks))
         import pprint
         for db in cif.data_blocks:
-            print "%s: %d tags, %d tables" % (db.name,
-                len(db.tags), len(db.tables))
+            print("%s: %d tags, %d tables" % (db.name,
+                len(db.tags), len(db.tables)))
             pprint.pprint(db.tags)
 
     #lexer_test("ccd.cif")

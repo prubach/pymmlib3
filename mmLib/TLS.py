@@ -15,17 +15,17 @@ try:
     except ImportError:
         from numpy.linalg import old as linalg
 except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+    from . import NumericCompat as numpy
+    from .NumericCompat import linalg
 
-import Constants
-import ConsoleOutput
-import AtomMath
-import PDB
-import Structure
-import Viewer
-import Gaussian
-import Colors
+from . import Constants
+from . import ConsoleOutput
+from . import AtomMath
+from . import PDB
+from . import Structure
+from . import Viewer
+from . import Gaussian
+from . import Colors
 
 ###############################################################################
 ## EXCEPTION BASE CLASS
@@ -411,7 +411,7 @@ class TLSFileFormatPDB(TLSFileFormat, PDB.RecordProcessor):
 
     def complete_T(self):
         for key in ("t11","t22","t33","t12","t13","t23"):
-            if not self.tls_scrap.has_key(key):
+            if key not in self.tls_scrap:
                 return
         try:
             self.tls_desc.set_T(
@@ -426,7 +426,7 @@ class TLSFileFormatPDB(TLSFileFormat, PDB.RecordProcessor):
 
     def complete_L(self):
         for key in ("l11","l22","l33","l12","l13","l23"):
-            if not self.tls_scrap.has_key(key):
+            if key not in self.tls_scrap:
                 return
         try:
             self.tls_desc.set_L_deg2(
@@ -441,7 +441,7 @@ class TLSFileFormatPDB(TLSFileFormat, PDB.RecordProcessor):
 
     def complete_S(self):
         for key in ("s11","s22","s33","s12","s13","s23","s21","s31","s32"):
-            if not self.tls_scrap.has_key(key):
+            if key not in self.tls_scrap:
                 return
 
         ## s2211, s1133, s12, s13, s23, s21, s31, s32
@@ -468,12 +468,12 @@ class TLSFileFormatPDB(TLSFileFormat, PDB.RecordProcessor):
             return
 
         ## no text == no tls info
-        if not rec.has_key("text"):
+        if "text" not in rec:
             return
 
         ## attempt to extract information from the text
         text = rec["text"]
-        for (re_key, re_tls) in self.pdb_regex_dict.items():
+        for (re_key, re_tls) in list(self.pdb_regex_dict.items()):
             mx = re_tls.match(text)
             if mx is not None:
                 break
@@ -665,11 +665,11 @@ class TLSFileFormatTLSOUT(TLSFileFormat):
         tls_desc_list = []
         tls_desc = None
 
-        for ln in fil.xreadlines():
+        for ln in fil:
             ln = ln.rstrip()
 
             ## search all regular expressions for a match
-            for (re_key, re_tls) in self.tlsout_regex_dict.items():
+            for (re_key, re_tls) in list(self.tlsout_regex_dict.items()):
                 mx = re_tls.match(ln)
                 if mx is not None:
                     break
@@ -849,11 +849,11 @@ class TLSFileFormatPureTLSOUT(TLSFileFormat):
         tls_desc_list = []
         tls_desc = None
 
-        for ln in fil.xreadlines():
+        for ln in fil:
             ln = ln.rstrip()
 
             ## search all regular expressions for a match
-            for (re_key, re_tls) in self.tlsout_regex_dict.items():
+            for (re_key, re_tls) in list(self.tlsout_regex_dict.items()):
                 mx = re_tls.match(ln)
                 if mx is not None:
                     break
@@ -964,11 +964,11 @@ class TLSFileFormatPHENIXOUT(TLSFileFormat):
         tls_desc_list = []
         tls_desc = None
 
-        for ln in fil.xreadlines():
+        for ln in fil:
             ln = ln.rstrip()
 
             ## search all regular expressions for a match
-            for (re_key, re_tls) in self.tlsout_regex_dict.items():
+            for (re_key, re_tls) in list(self.tlsout_regex_dict.items()):
                 mx = re_tls.match(ln)
                 if mx is not None:
                     break
@@ -1118,11 +1118,11 @@ class TLSFileFormatPHENIX(TLSFileFormat):
         tls_desc_list = []
         tls_desc = None
 
-        for ln in fil.xreadlines():
+        for ln in fil:
             ln = ln.rstrip()
 
             ## search all regular expressions for a match
-            for (re_key, re_tls) in self.tlsout_regex_dict.items():
+            for (re_key, re_tls) in list(self.tlsout_regex_dict.items()):
                 mx = re_tls.match(ln)
                 if mx is not None:
                     break
@@ -2334,8 +2334,8 @@ def calc_TLSCA_least_squares_fit(segment, origin):
     ## extract the CA-pivot L tensors
     frag_L_dict = {}
     for frag in segment.iter_fragments():
-        if not iL11p.has_key(frag):
-            print "NO PIVOT: %s" % (frag)
+        if frag not in iL11p:
+            print("NO PIVOT: %s" % (frag))
             continue
 
         iL11 = iL11p[frag]
@@ -2346,8 +2346,8 @@ def calc_TLSCA_least_squares_fit(segment, origin):
         frag_L_dict[frag] = CA_L
         eval = linalg.eigenvalues(CA_L) * Constants.RAD2DEG2
 
-        print "%s %s: %6.2f %6.2f %6.2f" % (
-            frag.fragment_id, frag.res_name, eval[0],eval[1],eval[2])
+        print("%s %s: %6.2f %6.2f %6.2f" % (
+            frag.fragment_id, frag.res_name, eval[0],eval[1],eval[2]))
 
     ## calculate TLSCA-U
     udict = {}
@@ -3969,7 +3969,7 @@ class GLTLSGroup(Viewer.GLDrawList):
 
         for atm, Utls in self.gltls_iter_atoms():
             for bond in atm.iter_bonds():
-                if in_dict.has_key(bond.get_partner(atm)):
+                if bond.get_partner(atm) in in_dict:
                     bond_list.append(bond)
 
         ## this just won't work...
@@ -4458,9 +4458,9 @@ class GLTLSChain(Viewer.GLDrawList):
 
 ## <testing>
 def test_module():
-    print "==============================================="
-    print "TEST CASE 1: TLS Class"
-    print
+    print("===============================================")
+    print("TEST CASE 1: TLS Class")
+    print()
 
     tls = TLSGroup()
     tls.name = "All protein"
@@ -4470,16 +4470,16 @@ def test_module():
     tls.set_S(0.0007, 0.0281, 0.0336, -0.0446,-0.2288, -0.0551,
               0.0487, 0.0163)
 
-    print tls
+    print(tls)
 
-    print "eigenvalues(T)"
-    print linalg.eigenvalues(tls.T)
-    print "eigenvalues(L)"
-    print linalg.eigenvalues(tls.L)
+    print("eigenvalues(T)")
+    print(linalg.eigenvalues(tls.T))
+    print("eigenvalues(L)")
+    print(linalg.eigenvalues(tls.L))
 
-    print "==============================================="
+    print("===============================================")
 
-    print 
+    print() 
 
 ##     print "==============================================="
 ##     print "TEST CASE 2: TLS/REFMAC file loading"

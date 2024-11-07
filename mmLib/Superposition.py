@@ -14,10 +14,10 @@ try:
     except ImportError:
         from numpy.linalg import old as linalg
 except ImportError:
-    import NumericCompat as numpy
-    from NumericCompat import linalg
+    from . import NumericCompat as numpy
+    from .NumericCompat import linalg
     
-import AtomMath
+from . import AtomMath
 
 def QuaternionToRotationMatrix(q):
     """Create a rotation matrix from q quaternion rotation.
@@ -88,7 +88,7 @@ def SuperimposePoints(src_points, dst_points):
 
     R = numpy.zeros((3,3), float)
 
-    for k in xrange(num_points):
+    for k in range(num_points):
         x = X[k]
         y = Y[k]
 
@@ -149,7 +149,7 @@ def SuperimposePositions(position_tuple_list):
     a1 = numpy.zeros((n,3), float)
     a2 = numpy.zeros((n,3), float)
     
-    for i in xrange(n):
+    for i in range(n):
         pos1, pos2 = position_tuple_list[i]
 
         a1[i] = pos1
@@ -165,7 +165,7 @@ def SuperimposeAtoms(atom_pair_list):
     a1 = numpy.zeros((n,3), float)
     a2 = numpy.zeros((n,3), float)
     
-    for i in xrange(n):
+    for i in range(n):
         atm1, atm2 = atom_pair_list[i]
 
         a1[i] = atm1.position
@@ -181,14 +181,14 @@ def SuperimposeAtomsOutlierRejection(alist, rmsd_cutoff = 1.0, max_cycles = 100)
     the least squares superposition is less than or equal to rmsd_cutoff, or the
     number of cycles exceeds max_cycles.
     """
-    for cycle in xrange(max_cycles):
+    for cycle in range(max_cycles):
         sresult = SuperimposeAtoms(alist)
-        print "Cycle %d NA: %5d RMSD %6.2f" % (cycle, sresult.num_atoms, sresult.rmsd)
+        print("Cycle %d NA: %5d RMSD %6.2f" % (cycle, sresult.num_atoms, sresult.rmsd))
         if sresult.rmsd <= rmsd_cutoff:
             return sresult
 
         deviation = []
-        for i in xrange(len(alist)):
+        for i in range(len(alist)):
             satm, datm = alist[i]            
             spos = sresult.transform(satm.position)
             deviation.append((AtomMath.length(spos - datm.position), i))
@@ -208,9 +208,9 @@ def SuperimposeAtomsOutlierRejection(alist, rmsd_cutoff = 1.0, max_cycles = 100)
 ## <testing>
 def test_module():
     import random
-    import AtomMath
-    import FileIO
-    import Structure
+    from . import AtomMath
+    from . import FileIO
+    from . import Structure
     
     R = AtomMath.rmatrixu(numpy.array((0.0, 0.0, 1.0), float), math.pi/2.0)
 
@@ -239,8 +239,8 @@ def test_module():
 
     R = sup.R
     Q = sup.Q
-    print Q
-    print R
+    print(Q)
+    print(R)
     
     so = sup.src_origin
     do = sup.dst_origin
