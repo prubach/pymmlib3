@@ -848,7 +848,7 @@ class mmCIFFileParser(object):
     def gen_token_iter(self, fileobj):
         re_tok = re.compile(
             r"(?:"
-
+            
              r"(?:_(.+?)[.](\S+))"               "|"  # _section.subsection
 
              r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings

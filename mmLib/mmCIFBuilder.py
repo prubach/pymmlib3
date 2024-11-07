@@ -221,7 +221,7 @@ class mmCIFStructureBuilder(StructureBuilder.StructureBuilder):
                        "atom_sites_alt"]
         
         for table in self.cif_data:
-            print("DEBUG: %s" % table)
+            #print("DEBUG: %s" % table)
             if table.name not in skip_tables:
                 self.struct.cifdb.add_table(table)
 
