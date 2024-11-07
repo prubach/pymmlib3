@@ -866,7 +866,7 @@ pdb_read(PyObject *self, PyObject *args)
       case PDB_FIELD_TYPE_FLOAT_5:
       case PDB_FIELD_TYPE_FLOAT_6:
 	py_strx   = PyString_FromStringAndSize(&in_buff[i], n);
-	py_floatx = PyFloat_FromString(py_strx, NULL);
+	py_floatx = PyFloat_FromString(py_strx);
 	Py_XDECREF(py_strx);
 
 	if (py_floatx != NULL) {
@@ -903,7 +903,7 @@ static PyMethodDef PDBModuleMethods[] = {
 
 
 DL_EXPORT(void)
-initpdbmodule(void)
+//initpdbmodule(void)
 {
   PyObject *m;
   
@@ -913,3 +913,4 @@ initpdbmodule(void)
   Py_INCREF(PDBModuleErr);
   PyModule_AddObject(m, "error", PDBModuleErr);
 }
+

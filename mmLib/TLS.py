@@ -376,19 +376,19 @@ class TLSFileFormatPDB(TLSFileFormat, PDB.RecordProcessor):
     ##REMARK   3    SELECTION: CHAIN A AND RESID -2:94
 
     pdb_regex_dict = {
-        "group":       re.compile("\s*TLS GROUP :\s+(\d+)\s*$"),
-        "range":       re.compile("\s*RESIDUE RANGE :\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$"),
-        "phenix_range":re.compile("\s*SELECTION:\s+CHAIN\s+(\w+)\s+AND\s+RESID\s+(-?\w+):(-?\w+)\s*$"),
-        "origin":      re.compile("\s*ORIGIN\s+FOR\s+THE\s+GROUP\s+[(]A[)]:([\s\-\.0-9]+)$"),
-        "t11_t22":     re.compile("\s*T11:\s*(\S+)\s+T22:\s*(\S+)\s*$"),
-        "t33_t12":     re.compile("\s*T33:\s*(\S+)\s+T12:\s*(\S+)\s*$"),
-        "t13_t23":     re.compile("\s*T13:\s*(\S+)\s+T23:\s*(\S+)\s*$"),
-        "l11_l22":     re.compile("\s*L11:\s*(\S+)\s+L22:\s*(\S+)\s*$"),
-        "l33_l12":     re.compile("\s*L33:\s*(\S+)\s+L12:\s*(\S+)\s*$"),
-        "l13_l23":     re.compile("\s*L13:\s*(\S+)\s+L23:\s*(\S+)\s*$"),
-        "s11_s12_s13": re.compile("\s*S11:\s*(\S+)\s+S12:\s*(\S+)\s+S13:\s*(\S+)\s*$"),
-        "s21_s22_s23": re.compile("\s*S21:\s*(\S+)\s+S22:\s*(\S+)\s+S23:\s*(\S+)\s*$"),
-        "s31_s32_s33": re.compile("\s*S31:\s*(\S+)\s+S32:\s*(\S+)\s+S33:\s*(\S+)\s*$")
+        "group":       re.compile(r"\s*TLS GROUP :\s+(\d+)\s*$"),
+        "range":       re.compile(r"\s*RESIDUE RANGE :\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$"),
+        "phenix_range":re.compile(r"\s*SELECTION:\s+CHAIN\s+(\w+)\s+AND\s+RESID\s+(-?\w+):(-?\w+)\s*$"),
+        "origin":      re.compile(r"\s*ORIGIN\s+FOR\s+THE\s+GROUP\s+[(]A[)]:([\s\-\.0-9]+)$"),
+        "t11_t22":     re.compile(r"\s*T11:\s*(\S+)\s+T22:\s*(\S+)\s*$"),
+        "t33_t12":     re.compile(r"\s*T33:\s*(\S+)\s+T12:\s*(\S+)\s*$"),
+        "t13_t23":     re.compile(r"\s*T13:\s*(\S+)\s+T23:\s*(\S+)\s*$"),
+        "l11_l22":     re.compile(r"\s*L11:\s*(\S+)\s+L22:\s*(\S+)\s*$"),
+        "l33_l12":     re.compile(r"\s*L33:\s*(\S+)\s+L12:\s*(\S+)\s*$"),
+        "l13_l23":     re.compile(r"\s*L13:\s*(\S+)\s+L23:\s*(\S+)\s*$"),
+        "s11_s12_s13": re.compile(r"\s*S11:\s*(\S+)\s+S12:\s*(\S+)\s+S13:\s*(\S+)\s*$"),
+        "s21_s22_s23": re.compile(r"\s*S21:\s*(\S+)\s+S22:\s*(\S+)\s+S23:\s*(\S+)\s*$"),
+        "s31_s32_s33": re.compile(r"\s*S31:\s*(\S+)\s+S32:\s*(\S+)\s+S33:\s*(\S+)\s*$")
         }
 
     def load_supported(self):
@@ -630,12 +630,12 @@ class TLSFileFormatTLSOUT(TLSFileFormat):
     values.
     """
     tlsout_regex_dict = {
-        "group":  re.compile("(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
-        "range":  re.compile("^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
-        "origin": re.compile("^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "T":      re.compile("^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "L":      re.compile("^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "S":      re.compile("^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
+        "group":  re.compile(r"(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
+        "range":  re.compile(r"^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
+        "origin": re.compile(r"^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "T":      re.compile(r"^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "L":      re.compile(r"^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "S":      re.compile(r"^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
         }
 
     def convert_frag_id_load(self, frag_id):
@@ -814,12 +814,12 @@ class TLSFileFormatPureTLSOUT(TLSFileFormat):
     ## NOTE: The file format is identical to the Refmac format, except that it
     ## does not contain the T, L, S, and origin fields.
     tlsout_regex_dict = {
-        "group":  re.compile("(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
-        "range":  re.compile("^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
-        "origin": re.compile("^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "T":      re.compile("^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "L":      re.compile("^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "S":      re.compile("^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
+        "group":  re.compile(r"(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
+        "range":  re.compile(r"^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
+        "origin": re.compile(r"^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "T":      re.compile(r"^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "L":      re.compile(r"^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "S":      re.compile(r"^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
         }
 
     def convert_frag_id_load(self, frag_id):
@@ -929,12 +929,12 @@ class TLSFileFormatPHENIXOUT(TLSFileFormat):
     #L     5.4300   5.8590   8.8541  -0.2476  -2.1140  -0.3333
     #S    -0.2126   0.0250   0.0406  -0.1994   0.2472   0.3260   0.3855  -0.4986
     tlsout_regex_dict = {
-        "group":  re.compile("(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
-        "range":  re.compile("^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
-        "origin": re.compile("^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "T":      re.compile("^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "L":      re.compile("^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "S":      re.compile("^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
+        "group":  re.compile(r"(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
+        "range":  re.compile(r"^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
+        "origin": re.compile(r"^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "T":      re.compile(r"^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "L":      re.compile(r"^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "S":      re.compile(r"^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
         }
 
     def convert_frag_id_load(self, frag_id):
@@ -1075,12 +1075,12 @@ class TLSFileFormatPHENIX(TLSFileFormat):
     #L     5.4300   5.8590   8.8541  -0.2476  -2.1140  -0.3333
     #S    -0.2126   0.0250   0.0406  -0.1994   0.2472   0.3260   0.3855  -0.4986
     tlsout_regex_dict = {
-        "group":  re.compile("(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
-        "range":  re.compile("^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
-        "origin": re.compile("^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "T":      re.compile("^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "L":      re.compile("^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
-        "S":      re.compile("^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
+        "group":  re.compile(r"(?:^\s*TLS\s*$)|(?:^\s*TLS\s+(.*)$)"),
+        "range":  re.compile(r"^\s*RANGE\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s+[']([A-Z])\s*([-0-9A-Z.]+)\s*[']\s*(\w*).*$"),
+        "origin": re.compile(r"^\s*ORIGIN\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "T":      re.compile(r"^\s*T\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "L":      re.compile(r"^\s*L\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$"),
+        "S":      re.compile(r"^\s*S\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+).*$")
         }
 
     ## Needs to look something like the following (from Pavel):

@@ -44,8 +44,8 @@ res_dict = {
     "GLN": True
     }
 
-re_program = re.compile("\s*PROGRAM[^:]*:\s*(.*)$")
-re_res     = re.compile("\s*RESOLUTION\s+RANGE\s+HIGH[^:]+:\s+(\S+)\s*$")
+re_program = re.compile(r"\s*PROGRAM[^:]*:\s*(.*)$")
+re_res     = re.compile(r"\s*RESOLUTION\s+RANGE\s+HIGH[^:]+:\s+(\S+)\s*$")
 
 def my_walk(path):
     """All Python's path walk functions suck.
