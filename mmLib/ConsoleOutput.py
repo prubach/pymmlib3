@@ -21,7 +21,6 @@ class ConesoleOutput(object):
             pass
         
     def debug(self, message):
-        return
         if self.disabled:
             return
         message = "[MMLIB:DEBUG] %s\n" % (message)
