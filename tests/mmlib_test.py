@@ -5,7 +5,7 @@
 ## included as part of this package.
 """This program performs some basic tests in the mmLib.Structure object model.
 """
-
+import os
 import sys
 import time
 import copy
@@ -608,19 +608,23 @@ def save_verify(struct, stats):
     compare structures.
     """
     ## pdb
-    print("[temp.pdb]")
-    FileIO.SaveStructure(fil = "temp.pdb", struct = struct, format = "PDB")
+    test_out = os.path.join(os.path.dirname(__file__), 'test_out')
+    os.makedirs(test_out, exist_ok=True)
+    pdb_file = "{}/temp_{}.pdb".format(test_out, struct.structure_id)
+    cif_file = "{}/temp_{}.cif".format(test_out, struct.structure_id)
+    print("[{}]".format(pdb_file))
+    FileIO.SaveStructure(fil = pdb_file, struct = struct, format = "PDB")
     pdb_struct = FileIO.LoadStructure(
-        fil           = "temp.pdb",
+        fil           = pdb_file,
         library_bonds = True);
     cmp_struct(struct, pdb_struct)
 
     ## mmCIF
-    print("[temp.cif]")
-    FileIO.SaveStructure(fil = "temp.cif", struct = struct, format = "CIF")
+    print("[{}]".format(cif_file))
+    FileIO.SaveStructure(fil = cif_file, struct = struct, format = "CIF")
 
     cif_struct = FileIO.LoadStructure(
-        fil           = "temp.cif",
+        fil           = cif_file,
         library_bonds = True)
     cmp_struct(struct, cif_struct)
 

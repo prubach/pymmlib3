@@ -17,8 +17,8 @@ def usage():
     usage: python make_library.py <component.cif file>
 
     Utility to create the mmLib monomer library located
-    in mmLib/Data/Monomers. It uses the RCSB public component dictionary
-    available on the web at: http://pdb.rutgers.edu/public-component-erf.cif
+    in mmLib/Data/Monomers. It uses the PDBe public component dictionary
+    available on the web at: https://ftp.ebi.ac.uk/pub/databases/pdb/data/monomers/components.cif
 
     When this utility is run, it creates the Monomers directory in the
     current working directory. To use it, it must be moved to its

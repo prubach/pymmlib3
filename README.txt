@@ -1,4 +1,4 @@
-mmLib-1.2.0: Python Macromolecular Library (mmLib)
+mmLib-1.9.9: Python Macromolecular Library (mmLib)
 http://pymmlib.sourceforge.net/
 
 REVISIONS:
@@ -13,8 +13,10 @@ modules the examination and manipulation of macromolecular structures,
 and the files which describe them.
 
 REQUIREMENTS:
-  * Python >= 2.4 (the iterators use yield, True/False)
-  * numpy  >= 1.0
+  * Python >= 3.8
+  * numpy  >= 1.26
+
+GUI and OpenGL not tested under Python3
 
 Additional requirements for the mmCIF Editor and tlsview.py Viewer:
   * PyOpenGL   >= 2.0.0.44 (http://pyopengl.sourceforge.net/)
@@ -37,3 +39,4 @@ You can contact us through our SourceForge site, or email us directly at:
   * Ethan Merritt <merritt@u.washington.edu>
   * Christoph Champ <champc@u.washington.edu>
   * Jay Painter <jpaint@u.washington.edu>
+  * Pawel Rubach <pawel.rubach@gmail.com>

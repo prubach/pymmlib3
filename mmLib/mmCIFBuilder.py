@@ -17,7 +17,7 @@ from . import Structure
 def setmaps_cif(smap, skey, dmap, dkey):
     """For string converisons, treat [?.] as blank.
     """
-    if smap.has_key_lower(skey):
+    if smap.has_key(skey):
         x = smap.getitem_lower(skey)
         if x in ('', '?', '.'):
             return False

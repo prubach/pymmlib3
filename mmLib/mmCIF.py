@@ -851,7 +851,11 @@ class mmCIFFileParser(object):
             
              r"(?:_(.+?)[.](\S+))"               "|"  # _section.subsection
 
-             r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
+             r"(?:\"(.*?)(?:\"\s|\"$))"          "|"  # double quoted strings
+
+             r"(?:'(.*?)(?:'\s|'$))"             "|"  # single quoted strings
+
+#             r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
 
              r"(?:\s*#.*$)"                      "|"  # comments
 
@@ -859,6 +863,9 @@ class mmCIFFileParser(object):
 
              ")")
 
+        #              r"(?:\"(.*?)(?:\"\s|\"$))"          "|"  # double quoted strings
+        #
+        #              r"(?:'(.*?)(?:'\s|'$))"             "|"  # single quoted strings
         file_iter = iter(fileobj)
 
         ## parse file, yielding tokens for self.parser()
@@ -888,7 +895,9 @@ class mmCIFFileParser(object):
             tok_iter = re_tok.finditer(ln)
 
             for tokm in tok_iter:
-                groups = tokm.groups()
+                groups_all = tokm.groups()
+                groups = (groups_all[0], groups_all[1], groups_all[2] or groups_all[3], groups_all[4])
+                #groups = groups_all
                 if groups != (None, None, None, None):
                     yield groups
 

@@ -7,6 +7,8 @@
 import os
 import sys
 import copy
+import tempfile
+from tempfile import TemporaryFile
 
 ## try to import the distutils package
 try:
@@ -128,23 +130,24 @@ def library_data(opts):
         os.path.join(os.curdir, "mmLib", "Data", "monomers.cif") ])
     ]
 
-    if opts["zip"]:
-        inst_list.append((os.path.join("mmLib", "Data"),
-            [ os.path.join(os.curdir, "mmLib", "Data", "Monomers.zip") ]))
-    else:
-        ## add all the monomer mmCIF files 
-        mon_dir = os.path.join(os.curdir, "mmLib", "Data", "Monomers")
+    if opts["with_monomer_library"]:
+        if opts["zip"]:
+            inst_list.append((os.path.join("mmLib", "Data"),
+                [ os.path.join(os.curdir, "mmLib", "Data", "Monomers.zip") ]))
+        else:
+            ## add all the monomer mmCIF files
+            mon_dir = os.path.join(os.curdir, "mmLib", "Data", "Monomers")
 
-        for dir1 in os.listdir(mon_dir):
-            dir2 = os.path.join(mon_dir, dir1)
+            for dir1 in os.listdir(mon_dir):
+                dir2 = os.path.join(mon_dir, dir1)
 
-            inst_dir = os.path.join("mmLib", "Data", "Monomers", dir1)
+                inst_dir = os.path.join("mmLib", "Data", "Monomers", dir1)
 
-            file_list = []
-            inst_list.append((inst_dir, file_list)) 
+                file_list = []
+                inst_list.append((inst_dir, file_list))
 
-            for fil in os.listdir(dir2):
-                file_list.append(os.path.join(dir2, fil))
+                for fil in os.listdir(dir2):
+                    file_list.append(os.path.join(dir2, fil))
 
     return inst_list
 
@@ -284,14 +287,31 @@ def run_setup(opts):
     """
     s0 = setup(
         cmdclass     = {'install_data': package_install_data},
-        name         = "pymmlib",
-        version      = "1.9.9",
-        author       = "Jay Painter",
-        author_email = "jpaint@u.washington.edu",
+        name         = "pymmlib3",
+        version      = "2.0.0",
+        author       = "Jay Painter, ported to python3 and improved by Pawel Rubach",
+        author_email = "jpaint@u.washington.edu, pawel.rubach@gmail.com",
         url          = "http://pymmlib.sourceforge.net/",
         packages     = ["mmLib"],
         ext_modules  = extension_list(opts),
-        data_files   = library_data(opts)
+        data_files   = library_data(opts),
+        entry_points={
+            'console_scripts': ['mmlib-build-library=mmLib.build_library:run'],
+        },
+        install_requires=[
+            'numpy'
+        ],
+        python_requires='>=3.8.0',
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
+            'Programming Language :: Python :: 3.11',
+            'Programming Language :: Python :: 3.12',
+            "License :: OSI Approved :: Artistic License",
+            "Operating System :: OS Independent"
+        ],
         )
 
 
@@ -375,17 +395,17 @@ def check_deps(opts):
     ver_string = "%d.%d.%d" % (major, minor, mminor)
 
     too_old = False
-    if major < 2:
+    if major < 3:
         too_old = True
-    elif major == 2:
-        if minor < 4:
+    elif major == 3:
+        if minor < 8:
             too_old = True
         elif minor == 0:
             if mminor < 1:
                 too_old = True
 
     if too_old is True:
-        print("ERROR: Python %s too old version >= 2.4.0 required." % (
+        print("ERROR: Python %s too old version >= 3.8.0 required." % (
             ver_string))
     else:
         print("OK:    Python %s Found." % (ver_string))
@@ -410,12 +430,14 @@ def buildlib(opts):
 
     LIB_FILE = os.path.join("mmLib", "Data", "Monomers.zip")
     LIB_PATH = os.path.join("mmLib", "Data", "Monomers")
-    TMP_PATH = "public-component-erf.cif"
-    URL      = "http://pdb.rutgers.edu/public-component-erf.cif"
+    TMP_FILE = tempfile.NamedTemporaryFile()
+    TMP_PATH = TMP_FILE.name
+    # "components.cif"
+    URL      = "https://ftp.ebi.ac.uk/pub/databases/pdb/data/monomers/components.cif"
 
     print("[BUILDLIB] downloading %s" % (URL))
 
-    fil = open(TMP_PATH, "w")
+    fil = open(TMP_PATH, "wb")
 
     opener = urllib.request.FancyURLopener()
     con = opener.open(URL)
@@ -466,12 +488,11 @@ def buildlib(opts):
 def check_pymmlib_options():
     import sys
 
-    ## Changed zip=True to zip=False, from Jay's suggestion.
-    ## Christoph Champ, 2008-02-14
     opt_defaults = {
         "pdb": True,
         "opengl": True,
         "zip": False,
+        "with_monomer_library": False
         }
 
     opts = {}
@@ -517,8 +538,8 @@ def usage():
     print("        Build the mmLib developers documentation using the")
     print("        Epidoc program.")
     print("    buildlib")
-    print("        Download the RCSB monomer library from")
-    print("        http://pdb.rutgers.edu/public-component-erf.cif and")
+    print("        Download the PDBe monomer library from")
+    print("        https://ftp.ebi.ac.uk/pub/databases/pdb/data/monomers/components.cif and")
     print("        use it to build the mmLib monomer library in")
     print("        mmLib/Data/Monomers")
 
@@ -547,8 +568,8 @@ def main():
             run_setup(opts)
         else:
             print("""\
-            ERROR: Python Distuils Not Found. You may have to install
-            the python-devel package on some Linux distructions.  See
+            ERROR: Python Distutils Not Found. You may have to install
+            the python-devel package on some Linux distributions. See
             INSTALL.txt for details.
             """)
 

@@ -231,4 +231,4 @@ if __name__ == "__main__":
         csb = CIFStructureBuilder(fil=test_file)
         s = csb.struct
         print(s)
-    builder_test("ccd.cif")
+    builder_test("/pol/dev/minor/pymmlib3/tests/t/1eas.cif")

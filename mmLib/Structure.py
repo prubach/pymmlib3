@@ -3643,7 +3643,7 @@ def fragment_id_split(frag_id):
     (sequence_num, insertion_code)
     """
     try:
-        return (int(frag_id), None)
+        return (int(frag_id), '')
     except ValueError:
         return (int(frag_id[:-1]), frag_id[-1:])
 
