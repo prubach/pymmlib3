@@ -24,8 +24,19 @@ jobs:
       run: python3 -m build
 
   store-dist:
+    runs-on: ubuntu-22.04
     name: Fix wheel packages
     steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ">=3.8"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install 
+        build wheel numpy auditwheel patchelf
+        --user
     - name: Fix binary distribution using auditwheel
       run: auditwheel repair dist/pymmlib3-*.whl
     - name: Remove old wheel
