@@ -49,11 +49,11 @@ class mmCIFDB(mmCIF.mmCIFData):
     def confirm_table(self, table_name):
         """Return table table_name, create the table if necessary.
         """
-        if table_name not in self:
+        try:
+            table = self[table_name]
+        except KeyError:
             table = mmCIF.mmCIFTable(table_name)
             self.append(table)
-        else:
-            table = self[table_name]
         return table
 
     def get_single(self, table_name, col_name):
@@ -104,15 +104,6 @@ class mmCIFDB(mmCIF.mmCIFData):
         return self.get_single("struct_keywords", "text")
     def set_struct_keywords(self, text):
         self.set_single("struct_keywords", "text", text)
-
-    def get_struct_keywords(self):
-        """Return structure keywords as stored in
-        _struct_keywords.text.
-        """
-        return self.get_single("struct_keywords", "text")
-    def set_struct_keywords(self, text):
-        self.set_single("struct_keywords", "text", text)
-
 
 ## ## generic data
 ## set_ims("database_pdb_rev", "date_original", info_map, "date")
