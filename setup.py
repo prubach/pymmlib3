@@ -285,13 +285,16 @@ def extension_list(opts):
 def run_setup(opts):
     """Invoke the Python Distutils setup function.
     """
+    with open("README.md", "r") as fh:
+        long_description = fh.read()
+
     s0 = setup(
         cmdclass     = {'install_data': package_install_data},
         name         = "pymmlib3",
         version      = "2.0.0",
-        author       = "Jay Painter, ported to python3 and improved by Pawel Rubach",
+        author       = "Jay Painter, Pawel Rubach",
         author_email = "jpaint@u.washington.edu, pawel.rubach@gmail.com",
-        url          = "http://pymmlib.sourceforge.net/",
+        url          = "https://github.com/prubach/pymmlib3",
         packages     = ["mmLib"],
         ext_modules  = extension_list(opts),
         data_files   = library_data(opts),
@@ -312,6 +315,9 @@ def run_setup(opts):
             "License :: OSI Approved :: Artistic License",
             "Operating System :: OS Independent"
         ],
+        description="mmLib-2.0.0: Python Macromolecular Library (mmLib), based on the Python 2.4 library: https://pymmlib.sourceforge.net/",
+        long_description=long_description,
+        long_description_content_type="text/markdown"
         )
 
 

@@ -13,10 +13,10 @@ the applications using the GTK+ GUI.
 -------------------------------------------------------------------------------
 MONOMER LIBRARY::
 
-mmLib uses a monomer library generated from the RCSB's public component
+mmLib uses a monomer library generated from the PDBe's public component
 dictionary available on the web at:
 
-http://pdb.rutgers.edu/public-component-erf.cif
+https://ftp.ebi.ac.uk/pub/databases/pdb/data/monomers/components.cif
 
 The official releases of mmLib contain a pre-built monomer library, but the 
 CVS version does not. However, we have modified mmLib's setup.py installation
@@ -24,7 +24,7 @@ script to have a special mode which downloads the RCSB library from the web,
 and rebuilds the mmLib monomer library from it.
 You can run using the command:
 
-# python setup.py buildlib
+# mmlib-build-library
 
 The library is large, and may take a while to download. We have also found that
 the RCSB changes the format of the data in this library from time to time, and
@@ -34,6 +34,8 @@ of the pre-built libraries from an official mmLib release.
 
 -------------------------------------------------------------------------------
 DEPENDENCY CHECKING::
+
+The OpenGL GUI is NOT TESTED in Python 3, may not work as it relies on old PyGTK!
 
 Once you have downloaded mmLib, you need to check to see if all the
 dependencies it requires are installed. The easiest way to do this is to
@@ -69,7 +71,7 @@ modules, and you can proceed to the "EASY INSTALLATION" section.
 Some of the dependencies you'll need are likely to exist as optional packages
 you didn't install from your Linux installation disks. Here's the list:
 
-* Python >= 2.4
+* Python >= 3.8
   URL: http://www.python.org/
   If you compile from source, you get python + python-devel. If you 
   installed from packages, you will need to install the python-devel packages.
@@ -85,6 +87,8 @@ you didn't install from your Linux installation disks. Here's the list:
   This is the next generation of Numeric Python. You can download it,
   build it, and install it without effecting any current Numeric Python
   installations.
+
+##### OLD and unnecessary for CIF file processing #############
 
 * OpenGL/GLUT (optional for mmLib Viewer)
   URL: Your install disks.
