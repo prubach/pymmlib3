@@ -22,6 +22,8 @@ jobs:
         --user
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
+
+  store-dist:
     - name: Fix binary distribution using auditwheel
       run: auditwheel repair dist/pymmlib3-*.whl
     - name: Remove old wheel
