@@ -24,6 +24,8 @@ jobs:
       run: python3 -m build
 
   store-dist:
+    name: Fix wheel packages
+    steps:
     - name: Fix binary distribution using auditwheel
       run: auditwheel repair dist/pymmlib3-*.whl
     - name: Remove old wheel
