@@ -16,10 +16,16 @@ jobs:
       run: >-
         python3 -m
         pip install 
-        build wheel numpy
+        build wheel numpy auditwheel patchelf
         --user
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
+    - name: Fix binary distribution using auditwheel
+      run: auditwheel repair dist/pymmlib3-*.whl
+    - name: Remove old wheel
+      run: rm -f dist/pymmlib3-*.whl
+    - name: Move fixed wheel to dist
+      run: mv wheelhouse/*whl dist/
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
