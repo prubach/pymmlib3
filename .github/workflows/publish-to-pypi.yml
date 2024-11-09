@@ -23,16 +23,16 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Fix binary distribution using auditwheel
-      run: auditwheel repair dist/pymmlib3-*${{ matrix.py-short }}*.whl
+      run: auditwheel repair dist/pymmlib3-*${{ matrix.py-short2 }}*.whl
     - name: Remove old wheel
-      run: rm -f dist/pymmlib3-*${{ matrix.py-short }}*.whl
+      run: rm -f dist/pymmlib3-*${{ matrix.py-short2 }}*.whl
     - name: Move fixed wheel to dist
-      run: mv wheelhouse/pymmlib3-*${{ matrix.py-short }}*.whl dist/
+      run: mv wheelhouse/pymmlib3-*${{ matrix.py-short2 }}*.whl dist/
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
-        path: dist/
+        path: dist/pymmlib3-*${{ matrix.py-short2 }}*.whl
 
   publish-to-pypi:
     name: >-
