@@ -28,6 +28,47 @@ class package_install_data(install_data):
         return install_data.run(self)
 
 
+def run_setup(opts):
+    """Invoke the Python Distutils setup function.
+    """
+    with open("README.md", "r") as fh:
+        long_description = fh.read()
+    s0 = setup(
+        cmdclass     = {'install_data': package_install_data},
+        name         = "pymmlib3",
+        version      = "2.0.1",
+        author       = "Jay Painter, Pawel Rubach",
+        author_email = "jpaint@u.washington.edu, pawel.rubach@gmail.com",
+        url          = "https://github.com/prubach/pymmlib3",
+        packages     = ["mmLib"],
+        ext_modules  = extension_list(opts),
+        data_files   = library_data(opts),
+        entry_points={
+            'console_scripts': ['mmlib-build-library=mmLib.build_library:run'],
+        },
+        install_requires=[
+            'numpy'
+        ],
+        python_requires='>=3.8.0',
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
+            'Programming Language :: Python :: 3.11',
+            'Programming Language :: Python :: 3.12',
+            "License :: OSI Approved :: Artistic License",
+            "Operating System :: Unix",
+            "Operating System :: POSIX :: Linux",
+            "Operating System :: MacOS :: MacOS X",
+            "Operating System :: Microsoft :: Windows"
+        ],
+        description="mmLib-2.0.0: Python Macromolecular Library (mmLib), based on the Python 2.4 library: https://pymmlib.sourceforge.net/",
+        long_description=long_description,
+        long_description_content_type="text/markdown"
+        )
+
+
 def assemble_paths_list():
     """Returns a list of paths to search for libraries and headers.
     """
@@ -66,7 +107,6 @@ def assemble_paths_list():
 
         if dir not in PATHS:
             PATHS.append((path, include_path))
-
     return PATHS
 
 
@@ -162,7 +202,6 @@ def pdbmodule_extension():
         include_dirs = [],
         library_dirs = [],
         libraries    = [])
-
     return ext
 
 
@@ -278,51 +317,7 @@ def extension_list(opts):
             print("  FAILURE: OpenGL Module will NOT be built.")
 
     print("="*79)
-
     return ext_list
-
-
-def run_setup(opts):
-    """Invoke the Python Distutils setup function.
-    """
-    with open("README.md", "r") as fh:
-        long_description = fh.read()
-
-    s0 = setup(
-        cmdclass     = {'install_data': package_install_data},
-        name         = "pymmlib3",
-        version      = "2.0.0",
-        author       = "Jay Painter, Pawel Rubach",
-        author_email = "jpaint@u.washington.edu, pawel.rubach@gmail.com",
-        url          = "https://github.com/prubach/pymmlib3",
-        packages     = ["mmLib"],
-        ext_modules  = extension_list(opts),
-        data_files   = library_data(opts),
-        entry_points={
-            'console_scripts': ['mmlib-build-library=mmLib.build_library:run'],
-        },
-        install_requires=[
-            'numpy'
-        ],
-        python_requires='>=3.8.0',
-        classifiers=[
-            "Programming Language :: Python :: 3",
-            'Programming Language :: Python :: 3.8',
-            'Programming Language :: Python :: 3.9',
-            'Programming Language :: Python :: 3.10',
-            'Programming Language :: Python :: 3.11',
-            'Programming Language :: Python :: 3.12',
-            "License :: OSI Approved :: Artistic License",
-            "Operating System :: Unix",
-            "Operating System :: POSIX :: Linux",
-            "Operating System :: MacOS :: MacOS X",
-            "Operating System :: Microsoft :: Windows"
-        ],
-        description="mmLib-2.0.0: Python Macromolecular Library (mmLib), based on the Python 2.4 library: https://pymmlib.sourceforge.net/",
-        long_description=long_description,
-        long_description_content_type="text/markdown"
-        )
-
 
 def make_doc(opts):
     """This is a special function to generate the documentation with
