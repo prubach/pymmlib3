@@ -22,27 +22,12 @@ jobs:
         --user
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
-
-  store-dist:
-    runs-on: ubuntu-22.04
-    name: Fix wheel packages
-    steps:
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ">=3.8"
-    - name: Install pypa/build
-      run: >-
-        python3 -m
-        pip install 
-        build wheel numpy auditwheel patchelf
-        --user
     - name: Fix binary distribution using auditwheel
-      run: auditwheel repair dist/pymmlib3-*.whl
+      run: auditwheel repair dist/pymmlib3-*${{ matrix.py-short }}*.whl
     - name: Remove old wheel
-      run: rm -f dist/pymmlib3-*.whl
+      run: rm -f dist/pymmlib3-*${{ matrix.py-short }}*.whl
     - name: Move fixed wheel to dist
-      run: mv wheelhouse/*whl dist/
+      run: mv wheelhouse/pymmlib3-*${{ matrix.py-short }}*.whl dist/
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
