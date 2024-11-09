@@ -20,21 +20,28 @@ jobs:
         pip install 
         build wheel numpy auditwheel patchelf
         --user
-    - name: test py versions
-      run: echo "py short ${{ format('{0}{1}', matrix.python-major-version, matrix.python-minor-version) }} short ${{ matrix.py-short }} short2 ${{ matrix.py-short2 }}"
+    - name: get the shortened version
+      env:
+        PYVER: "py${{ matrix.python-version }}"
+      run: |
+        PYVER=${{ env.PYVER }}
+        PYVER=${PYVER//.} # replace all dots
+        echo PYVER=${PYVER} >> $GITHUB_ENV # update GitHub ENV vars
+    - name: print env
+      run: echo ${{ env.PYVER }}
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Fix binary distribution using auditwheel
-      run: auditwheel repair dist/pymmlib3-*cp${{ format('{0}{1}', matrix.python-major-version, matrix.python-minor-version) }}*.whl
+      run: auditwheel repair dist/pymmlib3-*cp${{ env.PYVER }}*.whl
     - name: Remove old wheel
-      run: rm -f dist/pymmlib3-*cp${{ format('{0}{1}', matrix.python-major-version, matrix.python-minor-version) }}*.whl
+      run: rm -f dist/pymmlib3-*cp${{ env.PYVER }}*.whl
     - name: Move fixed wheel to dist
-      run: mv wheelhouse/pymmlib3-*cp${{ format('{0}{1}', matrix.python-major-version, matrix.python-minor-version) }}*.whl dist/
+      run: mv wheelhouse/pymmlib3-*cp${{ env.PYVER }}*.whl dist/
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
-        path: dist/pymmlib3-*cp${{ format('{0}{1}', matrix.python-major-version, matrix.python-minor-version) }}*.whl
+        path: dist/pymmlib3-*cp${{ env.PYVER }}*.whl
 
   publish-to-pypi:
     name: >-
