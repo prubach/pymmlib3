@@ -4,7 +4,7 @@ URL of original project: http://pymmlib.sourceforge.net/
 Ported to Python3
 
 ## REVISIONS:
-  * 2024-11-09: 2.0.3: Runs using Python3
+  * 2024-11-09: 2.0.4: Runs using Python3
   * 2024-11-06: 2.0.0: Runs using Python3
   * 2011-03-27: 1.2.0: Skittles/validation support
   * 2008-02-26: 1.1.0: PHENIX support; Christoph Champ

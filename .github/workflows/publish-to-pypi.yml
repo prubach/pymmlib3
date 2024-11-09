@@ -41,10 +41,10 @@ jobs:
         name: pymmlib3-distro-${{ env.PYVER }}
         path: dist/pymmlib3-*${{ env.PYVER }}*.whl
     - name: Store the tar.gz packages
-      if: ${{ matrix.python-version == '3.12' }}
+      if: ${{ matrix.python-version > 3.12 }}
       uses: actions/upload-artifact@v4
       with:
-        name: pymmlib3-distro-tar-gz
+        name: pymmlib3-tgz
         path: dist/pymmlib3-*-.tar.gz
 
   publish-to-pypi:
@@ -86,7 +86,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          pattern: pymmlib3-distro-*
+          pattern: pymmlib3-*
           merge-multiple: true
           path: dist/
       - name: Sign the dists with Sigstore
