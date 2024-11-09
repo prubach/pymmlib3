@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pymmlib3-tgz
-        path: dist/pymmlib3-*-.tar.gz
+        path: dist/pymmlib3-*.tar.gz
 
   publish-to-pypi:
     name: >-
