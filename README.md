@@ -1,9 +1,10 @@
-# mmLib-2.0.0: Python Macromolecular Library (mmLib)
+# mmLib-2.0.x: Python Macromolecular Library (mmLib)
 URL of original project: http://pymmlib.sourceforge.net/
 
 Ported to Python3
 
 ## REVISIONS:
+  * 2024-11-09: 2.0.2: Runs using Python3
   * 2024-11-06: 2.0.0: Runs using Python3
   * 2011-03-27: 1.2.0: Skittles/validation support
   * 2008-02-26: 1.1.0: PHENIX support; Christoph Champ

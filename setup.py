@@ -36,9 +36,9 @@ def run_setup(opts):
     s0 = setup(
         cmdclass     = {'install_data': package_install_data},
         name         = "pymmlib3",
-        version      = "2.0.1",
-        author       = "Jay Painter, Pawel Rubach",
-        author_email = "jpaint@u.washington.edu, pawel.rubach@gmail.com",
+        version      = "2.0.2",
+        author       = "Pawel Rubach, originally: Jay Painter",
+        author_email = "pawel.rubach@gmail.com",
         url          = "https://github.com/prubach/pymmlib3",
         packages     = ["mmLib"],
         ext_modules  = extension_list(opts),
@@ -57,13 +57,14 @@ def run_setup(opts):
             'Programming Language :: Python :: 3.10',
             'Programming Language :: Python :: 3.11',
             'Programming Language :: Python :: 3.12',
+            'Programming Language :: Python :: 3.13',
             "License :: OSI Approved :: Artistic License",
             "Operating System :: Unix",
             "Operating System :: POSIX :: Linux",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: Microsoft :: Windows"
         ],
-        description="mmLib-2.0.0: Python Macromolecular Library (mmLib), based on the Python 2.4 library: https://pymmlib.sourceforge.net/",
+        description="mmLib-2.0: Python Macromolecular Library (mmLib), based on the Python 2.4 library: https://pymmlib.sourceforge.net/",
         long_description=long_description,
         long_description_content_type="text/markdown"
         )
