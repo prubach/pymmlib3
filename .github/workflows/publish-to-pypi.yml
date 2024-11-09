@@ -3,8 +3,8 @@ on: push
 
 jobs:
   build:
-    name: Build distribution 📦
-    runs-on: ubuntu-22.04
+    name: Build pymmlib3 distribution 📦
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
@@ -38,7 +38,7 @@ jobs:
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
-        name: pymmlib3-distro-${{ matrix.python-version }}
+        name: pymmlib3-distro-${{ env.PYVER }}
         path: dist/pymmlib3-*${{ env.PYVER }}*.whl
 
   publish-to-pypi:
