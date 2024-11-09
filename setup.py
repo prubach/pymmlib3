@@ -36,7 +36,7 @@ def run_setup(opts):
     s0 = setup(
         cmdclass     = {'install_data': package_install_data},
         name         = "pymmlib3",
-        version      = "2.0.5",
+        version      = "2.0.6",
         author       = "Pawel Rubach, originally: Jay Painter",
         author_email = "pawel.rubach@gmail.com",
         url          = "https://github.com/prubach/pymmlib3",
