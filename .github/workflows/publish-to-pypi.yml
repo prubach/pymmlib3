@@ -22,26 +22,24 @@ jobs:
         --user
     - name: get the shortened version
       env:
-        PYVER: "py${{ matrix.python-version }}"
+        PYVER: "cp${{ matrix.python-version }}"
       run: |
         PYVER=${{ env.PYVER }}
         PYVER=${PYVER//.} # replace all dots
         echo PYVER=${PYVER} >> $GITHUB_ENV # update GitHub ENV vars
-    - name: print env
-      run: echo ${{ env.PYVER }}
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Fix binary distribution using auditwheel
-      run: auditwheel repair dist/pymmlib3-*cp${{ env.PYVER }}*.whl
+      run: auditwheel repair dist/pymmlib3-*${{ env.PYVER }}*.whl
     - name: Remove old wheel
-      run: rm -f dist/pymmlib3-*cp${{ env.PYVER }}*.whl
+      run: rm -f dist/pymmlib3-*${{ env.PYVER }}*.whl
     - name: Move fixed wheel to dist
-      run: mv wheelhouse/pymmlib3-*cp${{ env.PYVER }}*.whl dist/
+      run: mv wheelhouse/pymmlib3-*${{ env.PYVER }}*.whl dist/
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
-        path: dist/pymmlib3-*cp${{ env.PYVER }}*.whl
+        path: dist/pymmlib3-*${{ env.PYVER }}*.whl
 
   publish-to-pypi:
     name: >-
