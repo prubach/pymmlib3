@@ -23,7 +23,7 @@ MMLIB_MONOMER_DATA_PATH = os.path.join(MMLIB_PATH, "Data", "monomers.cif")
 RCSB_MONOMER_DATA_FILE  = os.path.join(MMLIB_PATH, "Data", "Monomers.zip") 
 RCSB_MONOMER_DATA_PATH  = os.path.join(MMLIB_PATH, "Data", "Monomers")
 
-if not os.path.exists(RCSB_MONOMER_DATA_PATH) and (not os.path.exists(RCSB_MONOMER_DATA_FILE) or os.path.getsize(RCSB_MONOMER_DATA_PATH) < 1000):
+if not os.path.exists(RCSB_MONOMER_DATA_PATH) and (not os.path.exists(RCSB_MONOMER_DATA_FILE) or os.path.getsize(RCSB_MONOMER_DATA_FILE) < 1000):
     print(
         'ERROR: Monomer Library does not exist!\nLooked for zip file ({}) or folder ({}).\nPlease use the mmlib-build-library tool to download the library from PDBe!'.format(
             RCSB_MONOMER_DATA_FILE, RCSB_MONOMER_DATA_PATH))
