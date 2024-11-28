@@ -336,7 +336,7 @@ def library_open_monomer_lib_zipfile(monomer_name):
             ConsoleOutput.warning("monomer description not found in zipfile for '%s'" % (monomer_name))
         else:
             from io import StringIO
-            return StringIO(blob)
+            return StringIO(blob.decode('utf-8'))
     return None
 
 
