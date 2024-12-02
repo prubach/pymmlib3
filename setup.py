@@ -36,11 +36,14 @@ def run_setup(opts):
     s0 = setup(
         cmdclass     = {'install_data': package_install_data},
         name         = "pymmlib3",
-        version      = "2.0.8",
+        version      = "2.1.0",
         author       = "Pawel Rubach, originally: Jay Painter",
         author_email = "pawel.rubach@gmail.com",
         url          = "https://github.com/prubach/pymmlib3",
         packages     = ["mmLib"],
+        package_data={
+            "mmLib": ["create_monomers.sh"],
+        },
         ext_modules  = extension_list(opts),
         data_files   = library_data(opts),
         entry_points={
